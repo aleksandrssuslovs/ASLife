@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="lv" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<meta http-equiv="content-language" content="lv">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AS Life — websites & AI for business</title>
+<style>
+:root{--bg:#f2f4f7;--fg:#12151a;--muted:#5a6270;--card:rgba(255,255,255,.65);--accent:#00a86b;--line:rgba(0,0,0,.14);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#05070a;--fg:#eef2f7;--muted:#8f99a8;--card:rgba(16,20,27,.55);--accent:#2bf0a0;--line:rgba(255,255,255,.12)}}
+:root[data-theme="dark"]{--bg:#05070a;--fg:#eef2f7;--muted:#8f99a8;--card:rgba(16,20,27,.55);--accent:#2bf0a0;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+main{position:relative;z-index:1}
+#loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:clip-path 1s cubic-bezier(.8,0,.2,1) .2s;clip-path:inset(0)}
+#loader.done{clip-path:inset(0 0 100% 0)}
+#loader b{font-size:clamp(2rem,8vw,4rem);letter-spacing:.2em;font-weight:800}
+#pc{color:var(--accent);font-variant-numeric:tabular-nums}
+#cur,#dot{position:fixed;left:0;top:0;z-index:50;pointer-events:none;border-radius:50%}
+#cur{width:38px;height:38px;margin:-19px 0 0 -19px;border:1.5px solid var(--accent);transition:width .3s,height .3s,margin .3s,background .3s}
+#cur.big{width:80px;height:80px;margin:-40px 0 0 -40px;background:color-mix(in srgb,var(--accent) 18%,transparent)}
+#dot{width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--accent)}
+@media (hover:none){#cur,#dot{display:none}}
+#prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;background:var(--accent)}
+nav{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:14px 6vw;backdrop-filter:blur(14px);background:var(--card);border-bottom:1px solid var(--line)}
+nav .logo{font-weight:800;letter-spacing:.08em}
+nav div{display:flex;gap:22px}
+nav a{color:var(--fg);text-decoration:none;font-size:.9rem;opacity:.7;transition:.2s}
+nav a:hover{opacity:1;color:var(--accent)}
+@media (max-width:560px){nav .logo{display:none}nav div{gap:14px}}
+section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:100px 6vw;max-width:1200px;position:relative}
+.eyebrow{color:var(--accent);letter-spacing:.25em;text-transform:uppercase;font-size:.78rem;margin:0 0 18px;font-family:ui-monospace,Consolas,monospace}
+h1{font-size:clamp(2.8rem,10vw,7.5rem);line-height:.95;margin:0 0 22px;font-weight:900;letter-spacing:-.03em}
+h1 .l{display:inline-block;opacity:0;transform:translateY(80px) rotateX(-90deg) scale(.6);animation:up 1s cubic-bezier(.2,.9,.2,1) forwards}
+h1 .g{color:var(--accent)}
+@keyframes up{to{opacity:1;transform:none}}
+#role{font-family:ui-monospace,Consolas,monospace;font-size:clamp(1rem,2.4vw,1.5rem);color:var(--fg);margin:0 0 14px;min-height:2em}
+#role::after{content:"▍";color:var(--accent);animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+h2{font-size:clamp(2rem,5vw,3.6rem);margin:0 0 26px;line-height:1.05;letter-spacing:-.02em}
+p{color:var(--muted);max-width:620px;font-size:1.05rem;margin:0 0 14px}
+.rv{opacity:0;transform:translateY(50px) scale(.97);filter:blur(8px);transition:opacity .9s,transform .9s cubic-bezier(.2,.8,.2,1),filter .9s}
+.rv.in{opacity:1;transform:none;filter:none}
+.btn{display:inline-block;margin-top:22px;padding:15px 34px;border-radius:999px;background:var(--accent);color:#04110b;text-decoration:none;font-weight:800;transition:transform .2s,box-shadow .3s;will-change:transform}
+.btn:hover{box-shadow:0 0 40px color-mix(in srgb,var(--accent) 60%,transparent)}
+.stats{display:flex;gap:44px;flex-wrap:wrap;margin-top:26px}
+.stats b{display:block;font-size:3rem;color:var(--accent);line-height:1}
+.stats span{font-size:.85rem;color:var(--muted)}
+.marq{overflow:hidden;margin:34px -6vw 0;border-block:1px solid var(--line);padding:10px 0;white-space:nowrap;background:var(--card);backdrop-filter:blur(8px)}
+.marq div{display:inline-block;animation:mq 26s linear infinite;font-size:clamp(1.6rem,5vw,3rem);font-weight:900}
+.marq span{margin:0 26px;-webkit-text-stroke:1.5px var(--fg);color:transparent}
+.marq span:nth-child(even){color:var(--accent);-webkit-text-stroke:0}
+@keyframes mq{to{transform:translateX(-50%)}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;perspective:1000px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px;min-height:230px;backdrop-filter:blur(14px);transition:transform .15s,border-color .3s;transform-style:preserve-3d;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.card:hover{border-color:var(--accent)}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(320px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--accent) 28%,transparent),transparent 60%);opacity:0;transition:opacity .3s}
+.card:hover::before{opacity:1}
+.card small{position:absolute;top:18px;right:24px;font-size:3.4rem;font-weight:900;color:transparent;-webkit-text-stroke:1px var(--line);transition:.4s}
+.card:hover small{-webkit-text-stroke-color:var(--accent);transform:translateZ(40px) translateY(-6px)}
+.card h3{margin:0 0 8px;font-size:1.4rem;transform:translateZ(30px)}.card p{font-size:.95rem;margin:0}
+.scroll{position:absolute;bottom:30px;left:6vw;font-size:.72rem;letter-spacing:.25em;color:var(--muted)}
+.scroll i{display:block;width:1px;height:48px;background:var(--accent);margin-top:8px;animation:sl 1.8s infinite;transform-origin:top}
+@keyframes sl{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+.hint{position:fixed;right:6vw;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:30;font-size:.72rem;letter-spacing:.2em;color:var(--muted);font-family:ui-monospace,Consolas,monospace}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(520px circle at var(--cx,50%) var(--cy,50%),color-mix(in srgb,var(--accent) 16%,transparent),transparent 70%)}
+.fx{display:grid;grid-template-columns:minmax(260px,380px) 1fr;gap:44px;align-items:center;margin-bottom:26px}
+@media (max-width:800px){.fx{grid-template-columns:1fr}}
+.pcard{aspect-ratio:1.586;border-radius:22px;padding:24px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 70%,#000),#0a0f18 70%);border:1px solid var(--line);position:relative;color:#fff;box-shadow:0 30px 60px rgba(0,0,0,.35);animation:fl 6s ease-in-out infinite;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.pcard::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);transform:translateX(-100%);animation:sh 4s infinite}
+.pcard b{letter-spacing:.3em}.pcard .chip{width:46px;height:34px;border-radius:7px;background:linear-gradient(135deg,#ffd777,#b8892b)}
+.pcard span{font-family:ui-monospace,Consolas,monospace;letter-spacing:.15em;color:#fff}.pcard em{font-style:normal;font-size:.8rem;letter-spacing:.15em;opacity:.85}
+@keyframes fl{50%{transform:translateY(-14px) rotateY(10deg) rotateX(4deg)}}
+@keyframes sh{60%,100%{transform:translateX(100%)}}
+.tl{border-left:2px solid var(--line);padding-left:28px;display:flex;flex-direction:column;gap:30px}
+.tl small{color:var(--accent);font-family:ui-monospace,Consolas,monospace;letter-spacing:.1em}
+.tl h3{margin:6px 0;font-size:1.3rem}.tl p{margin:0}
+#modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:4vw;opacity:0;visibility:hidden;transition:.35s}
+#modal.on{opacity:1;visibility:visible}
+.win{width:min(1100px,100%);max-height:90vh;background:var(--bg);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transform:translateY(40px) scale(.96);transition:.45s cubic-bezier(.2,.9,.2,1);box-shadow:0 40px 100px rgba(0,0,0,.5)}
+#modal.on .win{transform:none}
+.bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.bar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}.bar i:nth-child(2){background:#febc2e}.bar i:nth-child(3){background:#28c840}
+.bar span{margin-left:10px;flex:1;font-family:ui-monospace,Consolas,monospace;font-size:.8rem;color:var(--muted);background:var(--bg);padding:4px 12px;border-radius:99px;text-align:center}
+.bar button{background:none;border:0;color:var(--fg);font-size:1.1rem;cursor:pointer}
+#host{overflow:auto;flex:1}
+.card .btn{margin-top:16px;padding:10px 22px;border:0;cursor:pointer;font:inherit;font-weight:800;align-self:flex-start}
+.pr{font-size:2.4rem;font-weight:900;color:var(--accent);margin:6px 0 10px}
+.hint{display:none}
+.sv{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:28px}
+.sv div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;backdrop-filter:blur(10px);transition:.3s}
+.sv div:hover{transform:translateY(-6px);border-color:var(--accent)}
+.sv i{font-style:normal;font-size:1.8rem;display:block}.sv h3{margin:6px 0 4px;font-size:1.05rem}.sv p{margin:0;font-size:.88rem}
+#botb{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:45;width:58px;height:58px;border-radius:50%;border:0;font-size:1.6rem;cursor:pointer;background:var(--accent);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#bot{position:fixed;right:20px;bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:46;width:min(360px,calc(100vw - 40px));height:min(480px,70vh);background:var(--bg);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;overflow:hidden;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:.3s;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+#bot.on{transform:none;opacity:1;visibility:visible}
+.bh{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.bh button{background:none;border:0;color:var(--fg);cursor:pointer;font-size:1rem}
+#bm{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+#bm div{padding:9px 13px;border-radius:14px;max-width:85%;font-size:.9rem;line-height:1.45}
+#bm .u{align-self:flex-end;background:var(--accent);color:#04110b}#bm .a{background:var(--card);border:1px solid var(--line)}
+.bq{display:flex;gap:6px;padding:0 14px 8px;flex-wrap:wrap}.bq button{font-size:.75rem;padding:5px 10px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--fg);cursor:pointer}
+.bi{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}.bi input{flex:1;background:var(--card);border:1px solid var(--line);color:var(--fg);padding:9px 12px;border-radius:99px;font:inherit;outline:0}.bi button{background:var(--accent);border:0;border-radius:50%;width:38px;cursor:pointer}
+#lng{display:flex;gap:4px}#lng b{cursor:pointer;font-size:.75rem;padding:4px 9px;border-radius:99px;border:1px solid var(--line);opacity:.65;transition:.2s}#lng b.on{background:var(--accent);color:#04110b;opacity:1}
+.rev{justify-content:flex-start;gap:6px}.rev .st{color:#ffb800;letter-spacing:.15em}.rev p{color:var(--fg);font-size:1rem;margin:6px 0 14px}.rev .au{font-style:normal;color:var(--muted);font-size:.85rem;margin-top:auto}
+@media (max-width:560px){nav a{font-size:.68rem}nav div{gap:7px}#lng b{padding:3px 6px;font-size:.68rem}}
+.sw{display:flex;gap:10px;align-items:center}#crn{display:flex;gap:4px}#crn b{cursor:pointer;font-size:.75rem;padding:4px 9px;border-radius:99px;border:1px solid var(--line);opacity:.65;transition:.2s}#crn b.on{background:var(--accent);color:#04110b;opacity:1}
+@media (max-width:560px){.sw{gap:5px}#crn b{padding:3px 6px;font-size:.68rem}}
+.rvs{display:flex;gap:18px;overflow-x:auto;padding:6px 2px 18px;scrollbar-width:none;scroll-behavior:auto;margin-right:-6vw}.rvs::-webkit-scrollbar{display:none}.rvs .rev{flex:0 0 min(330px,80vw);min-height:230px}
+.rvb{display:flex;gap:10px;margin-top:6px}.rvb button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;font-size:1.1rem;transition:.25s}.rvb button:hover{border-color:var(--accent);color:var(--accent)}
+.soc{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.soc a{padding:11px 22px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--fg);text-decoration:none;font-weight:700;transition:.25s}.soc a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-3px)}
+.stats b[data-p]::after{content:'+'}
+#lng.dd,#crn.dd{display:block;position:relative}
+.ddb{display:flex;align-items:center;gap:8px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font:inherit;font-size:.9rem;cursor:pointer;backdrop-filter:blur(10px);transition:.2s}
+.ddb:hover{border-color:var(--accent)}
+.ddb i{width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translate(-2px,-2px);transition:.25s}
+.dd.open .ddb i{transform:rotate(225deg)}
+.ddl{display:block;position:absolute;right:0;top:calc(100% + 8px);min-width:120px;background:#fff;color:#14161a;border-radius:14px;padding:8px 0;box-shadow:0 20px 50px rgba(0,0,0,.35);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.2s;z-index:60}
+.dd.open .ddl{opacity:1;visibility:visible;transform:none}
+#lng .ddl b,#crn .ddl b{display:block;padding:11px 22px;font-size:.95rem;font-weight:500;border:0;border-radius:0;background:none;color:#14161a;opacity:1;cursor:pointer;white-space:nowrap}
+#lng .ddl b:hover,#crn .ddl b:hover{background:#eef0f6}
+#lng .ddl b.on,#crn .ddl b.on{background:#f0f0f7;color:#14161a;font-weight:700}
+@media (max-width:560px){.ddb{padding:5px 9px;font-size:.72rem;gap:6px}.ddb i{width:5px;height:5px}#lng .ddl b,#crn .ddl b{padding:9px 16px}}
+h2 span{background:linear-gradient(90deg,var(--accent),#fff,var(--accent));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:sh2 4s linear infinite}@keyframes sh2{to{background-position:-200% 0}}
+.sv i{display:inline-block;animation:bob 3s ease-in-out infinite}.sv div:nth-child(2n) i{animation-delay:.6s}.sv div:nth-child(3n) i{animation-delay:1.2s}@keyframes bob{50%{transform:translateY(-6px)}}
+.btn{position:relative;overflow:hidden}.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);transform:translateX(-120%);animation:bs 3.5s infinite}@keyframes bs{60%,100%{transform:translateX(120%)}}
+.card.rev .st{animation:tw 2.4s ease-in-out infinite}@keyframes tw{50%{opacity:.6;letter-spacing:.25em}}
+.story{margin:28px 0 6px}
+.wk{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}.site{display:block;text-decoration:none;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;backdrop-filter:blur(12px);transition:.3s}.site:hover{transform:translateY(-8px);border-color:var(--accent);box-shadow:0 24px 50px rgba(0,0,0,.3)}
+.shot{aspect-ratio:16/10;border-radius:12px;background:linear-gradient(135deg,var(--c1),var(--c2));background-size:200% 200%;animation:gs 8s ease infinite;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}@keyframes gs{50%{background-position:100% 100%}}
+.shot::before{content:"";position:absolute;top:0;left:0;right:0;height:22px;background:rgba(0,0,0,.25)}.shot u{text-decoration:none;color:#fff;font-weight:800;font-size:1.05rem;letter-spacing:.04em;text-shadow:0 2px 12px rgba(0,0,0,.4);transition:.4s}.site:hover .shot u{transform:scale(1.08)}
+.shot img{position:absolute;inset:22px 0 0 0;width:100%;height:calc(100% - 22px);object-fit:cover;object-position:top}
+.site h3{margin:14px 6px 2px}.site p{margin:0 6px 6px;font-size:.9rem}.site .vis{display:block;margin:6px;color:var(--accent);font-weight:700;font-size:.85rem}
+.mix{position:relative;min-height:380px}.mix .pcard{width:82%;position:relative;z-index:1}
+.mc{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;backdrop-filter:blur(14px);box-shadow:0 20px 40px rgba(0,0,0,.3);font-size:.8rem;animation:fl 5s ease-in-out infinite;z-index:2}.mc b{display:block;margin-bottom:6px;font-size:.8rem}
+.chat{right:0;bottom:30px;width:62%;animation-delay:.8s}.chat span{display:block;padding:6px 10px;border-radius:10px;margin-top:5px;color:var(--fg);font-size:.78rem}.chat .u{background:var(--accent);color:#04110b;margin-left:20%}.chat .a{background:rgba(127,127,127,.2)}
+.cal{right:-4px;top:-14px;width:46%;animation-delay:1.6s}.days{display:flex;gap:5px}.days i{flex:1;height:22px;border-radius:6px;background:rgba(127,127,127,.25)}.days i.on{background:var(--accent);animation:pu 1.6s infinite}@keyframes pu{50%{opacity:.5}}
+.ana{left:-6px;bottom:-8px;width:44%;animation-delay:2.2s}.bars{display:flex;align-items:flex-end;gap:5px;height:44px}.bars i{flex:1;background:var(--accent);border-radius:4px 4px 0 0;animation:gr 2.4s ease-in-out infinite;transform-origin:bottom}.bars i:nth-child(1){height:40%}.bars i:nth-child(2){height:65%;animation-delay:.2s}.bars i:nth-child(3){height:50%;animation-delay:.4s}.bars i:nth-child(4){height:85%;animation-delay:.6s}.bars i:nth-child(5){height:100%;animation-delay:.8s}@keyframes gr{50%{transform:scaleY(.7)}}
+@media (max-width:800px){.mix{min-height:420px}}
+.mix{min-height:450px}.mix .pcard{margin-top:44px}.cal{width:56%;right:-6px;top:-14px}.cal b{display:flex;justify-content:space-between;gap:6px}.wd,.dg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}.wd{margin-bottom:3px}.wd u{text-decoration:none;font-size:.6rem;opacity:.6}.dg i{font-style:normal;font-size:.62rem;padding:3px 0;border-radius:6px}.dg i.bk{background:rgba(127,127,127,.3)}.dg i.td{background:var(--accent);color:#04110b;font-weight:800;animation:pu 1.6s infinite}
+.crm{left:-8px;top:-16px;width:44%;animation-delay:.4s}.ld{display:flex;align-items:center;gap:8px}.ld em{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#04110b;font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}.ld span{display:block;font-size:.8rem;color:var(--fg)}.ld small{display:block;font-size:.68rem;color:var(--muted)}.ld u{text-decoration:none;font-size:.62rem;padding:3px 7px;border-radius:99px;background:var(--accent);color:#04110b;font-weight:800;margin-left:auto;animation:pu 1.6s infinite}
+@media (max-width:800px){.mix{min-height:490px}.cal{width:62%}.crm{width:50%}}
+.mix{min-height:540px}.mix .pcard{margin-top:130px}.cal{top:0}.crm{top:12px}.chat{width:58%}.ana{width:44%}
+.ana b{display:flex;justify-content:space-between}.up{font-style:normal;color:var(--accent);font-weight:800}.ln{display:block;width:100%;height:56px;color:var(--accent)}.ln .pl{stroke-dasharray:140;stroke-dashoffset:140;animation:dr 3s ease-in-out infinite}@keyframes dr{0%{stroke-dashoffset:140}60%,100%{stroke-dashoffset:0}}.lb{display:block;font-size:.68rem;color:var(--muted)}
+@media (max-width:800px){.mix{min-height:580px}}
+.at{font-size:clamp(1.5rem,3.6vw,2.2rem);margin:60px 0 10px}
+.steps{counter-reset:s;display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.steps span{padding:9px 20px;border:1px solid var(--line);border-radius:99px;background:var(--card);font-weight:700;transition:.25s}.steps span::before{counter-increment:s;content:counter(s) ". ";color:var(--accent)}.steps span:hover{border-color:var(--accent);transform:translateY(-3px)}
+@media (max-width:700px){
+html{scroll-padding-top:120px}
+nav{flex-wrap:wrap;gap:8px 10px;padding:10px 4vw 8px;align-items:center}
+nav .logo{display:block;order:1;font-size:1rem}
+nav .sw{order:2;margin-left:auto}
+nav>div:first-of-type{order:3;flex:0 0 100%;overflow-x:auto;gap:8px;scrollbar-width:none;padding-bottom:2px}
+nav>div:first-of-type::-webkit-scrollbar{display:none}
+nav>div:first-of-type a{flex:none;font-size:.78rem;opacity:1;padding:6px 13px;border:1px solid var(--line);border-radius:99px;background:var(--card);white-space:nowrap}
+section{padding:130px 5vw 56px;min-height:auto}
+#home{min-height:100vh;padding-top:150px}
+h1{font-size:clamp(2.6rem,13vw,4rem)}
+h2{font-size:clamp(1.7rem,8vw,2.4rem)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.sv,#projects .grid,.wk,.fx .tl{display:flex;flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin-right:-5vw;padding:4px 5vw 14px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.sv::-webkit-scrollbar,#projects .grid::-webkit-scrollbar,.wk::-webkit-scrollbar,.fx .tl::-webkit-scrollbar{display:none}
+.sv>div,#projects .grid>.card,.wk>.site,.fx .tl>div{flex:0 0 76%;scroll-snap-align:start}
+.fx .tl{border-left:0;padding-left:0}
+.fx .tl>div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.card{min-height:200px}
+.mix{min-height:560px;margin:0 2px}.cal{right:0}.crm{left:0}.ana{left:0}
+#bot{left:12px;right:12px;width:auto;bottom:calc(86px + env(safe-area-inset-bottom,0px));height:min(72vh,540px)}
+#modal{padding:0}.win{max-height:100%;height:100%;border-radius:0;width:100%}
+.btn{padding:14px 26px}.soc a{flex:1 1 40%;text-align:center}
+.marq{margin-left:-5vw;margin-right:-5vw}.rvs{margin-right:-5vw}.scroll{display:none}
+}
+#burger{display:none}
+@media (max-width:700px){
+html{scroll-padding-top:80px}
+nav{display:grid;grid-template-columns:1fr auto 1fr;gap:0;padding:10px 4vw}
+nav .logo{display:block;justify-self:center;font-size:1.05rem;letter-spacing:.06em}
+#burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 11px;cursor:pointer;justify-self:start}
+#burger i{display:block;height:2px;background:var(--fg);border-radius:2px;transition:.3s}
+nav.open #burger i:nth-child(1){transform:translateY(7px) rotate(45deg)}nav.open #burger i:nth-child(2){opacity:0}nav.open #burger i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+nav .sw{justify-self:end;margin-left:0}
+nav>div:first-of-type{position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;overflow:visible;padding:8px 5vw 18px;background:var(--bg);border-bottom:1px solid var(--line);opacity:0;visibility:hidden;transform:translateY(-10px);transition:.3s}
+nav.open>div:first-of-type{opacity:1;visibility:visible;transform:none}
+nav>div:first-of-type a{width:100%;font-size:1.15rem;font-weight:600;padding:15px 4px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;white-space:normal;opacity:1}
+nav a[href="#projects"]{display:none}
+#projects{display:none}
+section{padding-top:100px}#home{padding-top:120px}
+}
+#projects{display:none!important}
+#name{transition:text-shadow .2s}
+#name:hover{text-shadow:4px 0 #ff2bd6,-4px 0 #2be8ff;animation:jt .3s steps(2) infinite}
+@keyframes jt{25%{transform:translate(-3px,1px)}50%{transform:translate(3px,-1px)}75%{transform:translate(-1px,-2px)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div id="loader"><b>AS LIFE</b><div id="pc">0%</div></div>
+<div id="cur"></div><div id="dot"></div><div id="prog"></div>
+<canvas id="bg"></canvas>
+<div class="hint">CLICK THE ORB</div>
+<nav><button id="burger" aria-label="Menu"><i></i><i></i><i></i></button><span class="logo">AS Life</span><div><a href="#home">Home</a><a href="#about">About</a><a href="#fintech">Integrations</a><a href="#work">Work</a><a href="#pricing">Pricing</a><a href="#reviews">Reviews</a><a href="#contact">Contact</a></div><div class="sw"><div class="dd" id="lng"><button class="ddb"><span id="ll">LV</span><i></i></button><div class="ddl"><b data-l="ru">RUS</b><b data-l="lv">LV</b><b data-l="en">EN</b></div></div><div class="dd" id="crn"><button class="ddb"><span id="cl">€</span><i></i></button><div class="ddl"><b data-c="EUR">€ EUR</b><b data-c="GBP">£ GBP</b><b data-c="USD">$ USD</b></div></div></div></nav>
+<main>
+<section id="home">
+  <p class="eyebrow" data-sc>aleksandrssuslovs.life · Riga</p>
+  <h1 id="name"><span class="g">Websites</span><br>that grow<br>your business</h1>
+  <div id="role"></div>
+  <p>I build websites for companies and connect everything they need: payments, booking, CRM, analytics and AI.</p>
+  <div><a class="btn mg" href="#work">See my work</a></div>
+  <div class="scroll">SCROLL<i></i></div>
+</section>
+<section id="about">
+  <p class="eyebrow rv" data-sc>01 — What I do</p>
+  <h2 class="rv">One website. <span style="color:var(--accent)">Everything connected.</span></h2>
+  <p class="rv">I design and launch fast, beautiful websites for any business, then plug in the tools that make them earn. You get one place that sells, answers and works for you 24/7, and one person who is responsible for all of it.</p>
+  <div class="tl story">
+    <div class="rv"><small>2023</small><h3>Started as a freelancer</h3><p>I began building websites and doing IT support for small businesses on my own.</p></div>
+    <div class="rv"><small>FINTECH</small><h3>Learned how business really works</h3><p>Working with payments and merchant onboarding taught me how customers pay and why details matter.</p></div>
+    <div class="rv"><small>TODAY</small><h3>AS Life is born</h3><p>With a Computer Science degree and real experience, I turned freelancing into my own small company.</p></div>
+  </div>
+  <div class="stats rv">
+    <!-- SET THE REAL NUMBER of completed projects in data-n below -->
+    <div><b data-n="15" data-p>0</b><span>projects completed</span></div>
+    <div><b data-n="3">0</b><span>languages</span></div>
+    <div><b data-n="3">0</b><span>days to launch</span></div>
+    <div><b data-n="24">0</b><span>hours to reply</span></div>
+  </div>
+  <div class="sv">
+    <div class="rv"><i>🌐</i><h3>Business websites</h3><p>Landing pages, multi-page sites and online stores, fast and mobile-first.</p></div>
+    <div class="rv"><i>✨</i><h3>3D & animated sites</h3><p>Interactive Three.js scenes and premium animations that people remember.</p></div>
+    <div class="rv"><i>🤖</i><h3>AI chatbots</h3><p>Assistants trained on your business for your site, Telegram and WhatsApp.</p></div>
+    <div class="rv"><i>📲</i><h3>Telegram & WhatsApp bots</h3><p>Bots for orders, bookings and customer support in the messengers your customers already use.</p></div>
+    <div class="rv"><i>⚙️</i><h3>AI automation</h3><p>Leads, emails, documents and reports handled automatically.</p></div>
+    <div class="rv"><i>💳</i><h3>Payments & fintech</h3><p>Card and wallet payments, onboarding flows and merchant processes, built with real fintech know-how.</p></div>
+    <div class="rv"><i>🔗</i><h3>Integrations</h3><p>CRM, booking, email, messengers and analytics connected into one system.</p></div>
+    <div class="rv"><i>🔄</i><h3>Redesign & speed</h3><p>Modernise an old site: new look, better speed, better conversion.</p></div>
+    <div class="rv"><i>🔍</i><h3>SEO & analytics</h3><p>Be found on Google and see exactly what brings customers.</p></div>
+    <div class="rv"><i>🛠️</i><h3>IT support</h3><p>Domain, hosting, setup and ongoing maintenance, so you never worry.</p></div>
+  </div>
+  <div class="marq rv"><div><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Three.js</span><span>AI</span><span>Automation</span><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Three.js</span><span>AI</span><span>Automation</span></div></div>
+</section>
+<section id="fintech">
+  <p class="eyebrow rv" data-sc>02 — Integrations</p>
+  <h2 class="rv">Connect <span style="color:var(--accent)">everything.</span></h2>
+  <div class="fx">
+    <div class="mix rv"><div class="pcard"><i class="chip"></i><b>YOUR BRAND</b><span>•••• •••• •••• 2026</span><em>PAYMENTS CONNECTED</em></div><div class="mc chat"><b>Telegram bot</b><span class="u">Book a table for 2?</span><span class="a">Done! Tomorrow 19:00 ✓</span></div><div class="mc cal"><b><span>Booking</span><span id="mo"></span></b><div class="wd" id="wd"></div><div class="dg" id="dg"></div></div><div class="mc crm"><b>CRM</b><div class="ld"><em>A</em><div><span>New lead</span><small>Website form</small></div><u>NEW</u></div></div><div class="mc ana"><b><span>Analytics</span><em class="up">+27%</em></b><svg class="ln" viewBox="0 0 100 40"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".35"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path d="M0 36 L18 30 L34 32 L52 20 L70 14 L100 3 L100 40 L0 40Z" fill="url(#ag)"/><polyline class="pl" points="0,36 18,30 34,32 52,20 70,14 100,3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><small class="lb">Revenue</small></div></div>
+    <div class="tl">
+      <div class="rv"><small>PAYMENTS</small><h3>Accept cards and wallets</h3><p>Visa/Mastercard, Apple Pay, Google Pay and bank transfers, connected to your site and your acquirer.</p></div>
+      <div class="rv"><small>BOOKING &amp; ORDERS</small><h3>Appointments, tables, delivery</h3><p>Customers book or order online and you get instant alerts.</p></div>
+      <div class="rv"><small>CRM &amp; EMAIL</small><h3>Every lead in one place</h3><p>Forms feed your CRM, email and newsletters automatically.</p></div>
+      <div class="rv"><small>MESSENGERS</small><h3>Telegram, WhatsApp, Instagram</h3><p>Chat with customers from the site and your favourite apps.</p></div>
+      <div class="rv"><small>AI ASSISTANT</small><h3>A chatbot that sells 24/7</h3><p>Trained on your business, answers questions, books and qualifies leads.</p></div>
+      <div class="rv"><small>ANALYTICS &amp; SEO</small><h3>Know what works</h3><p>Traffic, conversions and Google ranking, tracked from day one.</p></div>
+    </div>
+  </div>
+  <p class="rv" style="color:var(--accent);font-family:ui-monospace,Consolas,monospace">Payments · Booking · CRM · Email · Messengers · Analytics · AI chatbots</p>
+  <div class="auto">
+    <h3 class="rv at">AI takes the routine</h3>
+    <p class="rv">I find the routine tasks in your company, build the automation and keep it running.</p>
+    <div class="sv">
+      <div class="rv"><i>📧</i><h3>Email &amp; inbox</h3><p>AI reads, sorts and drafts replies for you.</p></div>
+      <div class="rv"><i>🧾</i><h3>Invoices &amp; documents</h3><p>Created, filled in and sent automatically.</p></div>
+      <div class="rv"><i>📊</i><h3>Reports</h3><p>Numbers collected and delivered to your inbox every week.</p></div>
+      <div class="rv"><i>🎯</i><h3>Lead handling</h3><p>New enquiries qualified, added to CRM and followed up.</p></div>
+      <div class="rv"><i>📅</i><h3>Scheduling &amp; reminders</h3><p>Bookings, confirmations and no-show reminders on autopilot.</p></div>
+      <div class="rv"><i>💬</i><h3>Customer support</h3><p>A chatbot answers common questions and hands over to a person.</p></div>
+      <div class="rv"><i>🗂️</i><h3>Data entry</h3><p>Data moves between forms, sheets and CRM without retyping.</p></div>
+      <div class="rv"><i>✍️</i><h3>Content</h3><p>Product descriptions, posts and translations drafted by AI.</p></div>
+    </div>
+    <div class="steps rv"><span>Audit</span><span>Build</span><span>Launch</span><span>Support</span></div>
+    <p class="rv" style="margin-top:18px;color:var(--fg)">You focus on the business. I set up and maintain everything.</p>
+  </div>
+</section>
+<section id="work">
+  <p class="eyebrow rv" data-sc>— Selected work</p>
+  <h2 class="rv">Selected <span style="color:var(--accent)">work.</span></h2>
+  <div class="wk">
+    <a class="site rv" href="http://katyainterior.com" target="_blank" rel="noopener"><div class="shot" style="--c1:#6b4f3a;--c2:#d9b99b"><u>katyainterior.com</u></div><h3>Katya Interior</h3><p>Interior designer portfolio</p><span class="vis">Visit site ↗</span></a>
+    <a class="site rv" href="https://dorncompanies.com" target="_blank" rel="noopener"><div class="shot" style="--c1:#0b3d91;--c2:#2bd9ff"><u>dorncompanies.com</u></div><h3>DORN</h3><p>Corporate website: ergonomics and workplace safety</p><span class="vis">Visit site ↗</span></a>
+    <a class="site rv" href="https://folksvfx.com" target="_blank" rel="noopener"><div class="shot" style="--c1:#3b1d6e;--c2:#ff5ea8"><u>folksvfx.com</u></div><h3>Folks VFX</h3><p>Visual effects studio website</p><span class="vis">Visit site ↗</span></a>
+    <a class="site rv" href="https://www.storypitcher.com/en" target="_blank" rel="noopener"><div class="shot" style="--c1:#1e2a78;--c2:#a05bff"><u>storypitcher.com</u></div><h3>StoryPitcher</h3><p>Website</p><span class="vis">Visit site ↗</span></a>
+    <a class="site rv" href="https://www.oliviajewelry.com/" target="_blank" rel="noopener"><div class="shot" style="--c1:#7a5a1e;--c2:#ffd34d"><u>oliviajewelry.com</u></div><h3>Olivia Jewelry</h3><p>E-commerce: jewelry store</p><span class="vis">Visit site ↗</span></a>
+    <a class="site rv" href="https://www.santinicycling.com/en" target="_blank" rel="noopener"><div class="shot" style="--c1:#0a5c36;--c2:#7cff6b"><u>santinicycling.com</u></div><h3>Santini Cycling</h3><p>E-commerce: cycling apparel</p><span class="vis">Visit site ↗</span></a>
+  </div>
+</section>
+<section id="projects">
+  <p class="eyebrow rv" data-sc>03 — Live demos</p>
+  <h2 class="rv">Sites for <span style="color:var(--accent)">every niche.</span></h2>
+  <div class="grid">
+    <div class="card rv"><small>01</small><h3>Fintech landing</h3><p>Dark, fast payment-service site with animated stats.</p><button class="btn" data-demo="fin">Open live demo →</button></div>
+    <div class="card rv"><small>02</small><h3>Interior studio</h3><p>Elegant portfolio site for designers and creative studios.</p><button class="btn" data-demo="int">Open live demo →</button></div>
+    <div class="card rv"><small>03</small><h3>AI assistant site</h3><p>SaaS-style page with a chatbot that answers customers.</p><button class="btn" data-demo="ai">Open live demo →</button></div>
+  </div>
+</section>
+<section id="pricing">
+  <p class="eyebrow rv" data-sc>03 — Pricing</p>
+  <h2 class="rv">Clear prices. <span style="color:var(--accent)">No surprises.</span></h2>
+  <div class="grid">
+    <div class="card rv"><h3>Landing page</h3><div class="pr">from €75</div><p>One-page site, responsive, animations, contact form. Ready in 3 days.</p></div>
+    <div class="card rv"><h3>Business website</h3><div class="pr">from €200</div><p>Multi-page site with CRM, booking, payments and analytics connected. Ready in 5 days.</p></div>
+    <div class="card rv"><h3>3D + AI website</h3><div class="pr">from €350</div><p>3D scenes, custom animations and an AI assistant that talks to your customers. Ready in about a week.</p></div>
+  </div>
+</section>
+<!-- SAMPLE REVIEWS: replace with real client reviews before launch -->
+<section id="reviews">
+  <p class="eyebrow rv" data-sc>04 — Reviews</p>
+  <h2 class="rv">What clients <span style="color:var(--accent)">say.</span></h2>
+  <div class="rvs" id="rvs">
+    <div class="card rev rv"><div class="st">★★★★★</div><p>Our new site was ready in a week and bookings grew right away. Aleksandrs explains everything in simple words.</p><em class="au">Marta K. · Café owner</em></div>
+    <div class="card rev rv"><div class="st">★★★★★</div><p>The chatbot answers customers at night and we stopped losing orders. Great value for the price.</p><em class="au">Andris B. · Online shop</em></div>
+    <div class="card rev rv"><div class="st">★★★★★</div><p>He connected payments and our CRM without a single problem. Everything just works.</p><em class="au">Elena V. · Beauty salon</em></div>
+    <div class="card rev rv"><div class="st">★★★★★</div><p>Fast, polite and very detail-oriented. The 3D animation made our site stand out from competitors.</p><em class="au">Pāvels D. · Car service</em></div>
+    <div class="card rev rv"><div class="st">★★★★★</div><p>Needed a site for my barbershop with online booking. Got it in 6 days, and clients already book at night.</p><em class="au">Roberts L. · Barbershop</em></div>
+    <div class="card rev rv"><div class="st">★★★★★</div><p>Clear prices, no surprises. He even helped me set up the domain and email.</p><em class="au">Inese S. · Flower shop</em></div>
+    <div class="card rev rv"><div class="st">★★★★★</div><p>I was afraid of anything technical, but he handled everything. The site loads really fast.</p><em class="au">Dmitry K. · Accounting firm</em></div>
+    <div class="card rev rv"><div class="st">★★★★★</div><p>Our site finally looks as professional as our work. We get more enquiries now.</p><em class="au">Laura M. · Real estate agency</em></div>
+  </div><div class="rvb"><button id="rp">←</button><button id="rn">→</button></div><div hidden>
+  </div>
+</section>
+<section id="contact">
+  <p class="eyebrow rv" data-sc>05 — Contact</p>
+  <h2 class="rv">Let's build<br>something <span style="color:var(--accent)">great.</span></h2>
+  <p class="rv">Want a website like these? Let's talk. · aleksandrssuslovs.life</p>
+  <div class="rv"><a class="btn mg" href="mailto:aleksandrs.suslov@gmail.com">aleksandrs.suslov@gmail.com</a></div>
+  <div class="soc rv"><a href="https://wa.me/37122016356" target="_blank" rel="noopener">WhatsApp</a><a href="https://t.me/asuslovs" target="_blank" rel="noopener">Telegram</a><a href="https://www.linkedin.com/in/aleksandrs-suslovs-6890582b3/?isSelfProfile=true" target="_blank" rel="noopener">LinkedIn</a></div>
+</section>
+</main>
+<button id="botb" aria-label="AI assistant">💬</button>
+<div id="bot"><div class="bh"><b>AI assistant</b><button id="botx">✕</button></div><div id="bm"></div><div class="bq"><button data-q="What services do you offer?">Services</button><button data-q="How much does a website cost?">Pricing</button><button data-q="Can you connect payments and an AI chatbot?">Integrations</button></div><div class="bi"><input id="bt" placeholder="Ask me anything..."><button id="bs">➤</button></div></div>
+<div id="modal"><div class="win"><div class="bar"><i></i><i></i><i></i><span id="mt"></span><button id="mx">✕</button></div><div id="host"></div></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)},root=document.documentElement;
+  // i18n (Latvian first, always)
+  var LG='lv',CU='EUR',RT=.86,NL=[];
+  var RTS={GBP:.86,USD:1.1},SY={GBP:'£',USD:'$'};function px(s){return CU==='EUR'?s:s.replace(/€(\d+)/g,function(m,n){return SY[CU]+Math.round(n*RTS[CU]/5)*5})}
+  var T={'Home':['Sākums','Главная'],'About':['Par mani','Обо мне'],'Integrations':['Integrācijas','Интеграции'],'Demos':['Piemēri','Демо'],'Pricing':['Cenas','Цены'],'Reviews':['Atsauksmes','Отзывы'],'Contact':['Kontakti','Контакты'],
+  'Websites':['Mājaslapas','Сайты'],'that grow':['kas audžē','которые растят'],'your business':['jūsu biznesu','ваш бизнес'],
+  'Company websites':['Uzņēmumu mājaslapas','Сайты для компаний'],'Online stores':['E-veikali','Интернет-магазины'],'Booking systems':['Rezervāciju sistēmas','Системы бронирования'],'AI chatbots':['AI čatboti','AI-чатботы'],
+  'I build websites for companies and connect everything they need: payments, booking, CRM, analytics and AI.':['Veidoju mājaslapas uzņēmumiem un pieslēdzu visu nepieciešamo: maksājumus, rezervācijas, CRM, analītiku un AI.','Создаю сайты для компаний и подключаю всё нужное: платежи, бронирование, CRM, аналитику и AI.'],
+  'See demos':['Skatīt piemērus','Смотреть демо'],'SCROLL':['RITINI','ЛИСТАЙ'],
+  '01 — What I do':['01 — Ko es daru','01 — Что я делаю'],'One website.':['Viena mājaslapa.','Один сайт.'],'Everything connected.':['Viss savienots.','Всё подключено.'],
+  'I design and launch fast, beautiful websites for any business, then plug in the tools that make them earn. You get one place that sells, answers and works for you 24/7, and one person who is responsible for all of it.':['Veidoju un palaižu ātras, skaistas mājaslapas jebkuram biznesam, tad pieslēdzu rīkus, kas ļauj tām pelnīt. Jūs saņemat vienu vietu, kas pārdod, atbild un strādā 24/7, un vienu cilvēku, kas atbild par visu.','Создаю и запускаю быстрые красивые сайты для любого бизнеса, затем подключаю инструменты, которые помогают им зарабатывать. Вы получаете одно место, которое продаёт, отвечает и работает 24/7, и одного человека, отвечающего за всё.'],
+  'niches with ready demos':['nišas ar gataviem piemēriem','ниш с готовыми демо'],'days to launch':['dienas līdz palaišanai','дней до запуска'],'hours to reply':['stundas atbildei','часа на ответ'],
+  'Business websites':['Biznesa mājaslapas','Сайты для бизнеса'],'Landing pages, multi-page sites and online stores, fast and mobile-first.':['Vienlapas, daudzlapu mājaslapas un e-veikali, ātri un pielāgoti mobilajiem.','Лендинги, многостраничные сайты и интернет-магазины: быстро и для мобильных.'],
+  '3D & animated sites':['3D un animētas mājaslapas','3D и анимированные сайты'],'Interactive Three.js scenes and premium animations that people remember.':['Interaktīvas Three.js ainas un premium animācijas, kas paliek atmiņā.','Интерактивные сцены Three.js и премиальные анимации, которые запоминаются.'],
+  'Assistants trained on your business for your site, Telegram and WhatsApp.':['Asistenti, apmācīti jūsu biznesam, jūsu mājaslapai, Telegram un WhatsApp.','Ассистенты, обученные под ваш бизнес, для сайта, Telegram и WhatsApp.'],
+  'AI automation':['AI automatizācija','AI-автоматизация'],'Leads, emails, documents and reports handled automatically.':['Klienti, e-pasti, dokumenti un atskaites tiek apstrādāti automātiski.','Заявки, письма, документы и отчёты обрабатываются автоматически.'],
+  'Payments & fintech':['Maksājumi un fintech','Платежи и финтех'],'Card and wallet payments, onboarding flows and merchant processes, built with real fintech know-how.':['Karšu un maku maksājumi, onboarding un tirgotāju procesi ar reālu fintech pieredzi.','Платежи картами и кошельками, onboarding и процессы мерчантов с реальным опытом в финтехе.'],
+  'CRM, booking, email, messengers and analytics connected into one system.':['CRM, rezervācijas, e-pasts, ziņojumapmaiņa un analītika vienā sistēmā.','CRM, бронирование, почта, мессенджеры и аналитика в одной системе.'],
+  'Redesign & speed':['Pārveidošana un ātrums','Редизайн и скорость'],'Modernise an old site: new look, better speed, better conversion.':['Modernizēju veco mājaslapu: jauns izskats, ātrāka darbība, labāka konversija.','Обновляю старый сайт: новый вид, скорость, конверсия.'],
+  'SEO & analytics':['SEO un analītika','SEO и аналитика'],'Be found on Google and see exactly what brings customers.':['Esiet atrodami Google un redziet, kas tieši atved klientus.','Будьте в Google и видьте, что именно приводит клиентов.'],
+  'IT support':['IT atbalsts','IT-поддержка'],'Domain, hosting, setup and ongoing maintenance, so you never worry.':['Domēns, hostings, uzstādīšana un pastāvīga uzturēšana, lai jums nav jāuztraucas.','Домен, хостинг, настройка и постоянная поддержка, чтобы вы не переживали.'],
+  '02 — Integrations':['02 — Integrācijas','02 — Интеграции'],'Connect':['Savienojiet','Подключите'],'everything.':['visu.','всё.'],
+  'PAYMENTS':['MAKSĀJUMI','ПЛАТЕЖИ'],'Accept cards and wallets':['Pieņemiet kartes un makus','Принимайте карты и кошельки'],'Visa/Mastercard, Apple Pay, Google Pay and bank transfers, connected to your site and your acquirer.':['Visa/Mastercard, Apple Pay, Google Pay un bankas pārskaitījumi, savienoti ar jūsu mājaslapu un ekvaireru.','Visa/Mastercard, Apple Pay, Google Pay и банковские переводы, подключённые к сайту и эквайеру.'],
+  'BOOKING & ORDERS':['REZERVĀCIJAS UN PASŪTĪJUMI','БРОНИРОВАНИЕ И ЗАКАЗЫ'],'Appointments, tables, delivery':['Pieraksti, galdiņi, piegāde','Записи, столики, доставка'],'Customers book or order online and you get instant alerts.':['Klienti rezervē vai pasūta tiešsaistē, un jūs uzreiz saņemat paziņojumu.','Клиенты бронируют или заказывают онлайн, а вы сразу получаете уведомление.'],
+  'CRM & EMAIL':['CRM UN E-PASTS','CRM И ПОЧТА'],'Every lead in one place':['Visi pieprasījumi vienuviet','Все заявки в одном месте'],'Forms feed your CRM, email and newsletters automatically.':['Formas automātiski nokļūst CRM, e-pastā un jaunumu vēstulēs.','Формы автоматически попадают в CRM, почту и рассылки.'],
+  'MESSENGERS':['ZIŅOJUMAPMAIŅA','МЕССЕНДЖЕРЫ'],'Chat with customers from the site and your favourite apps.':['Sazinieties ar klientiem no mājaslapas un iecienītām lietotnēm.','Общайтесь с клиентами с сайта и из любимых приложений.'],
+  'AI ASSISTANT':['AI ASISTENTS','AI-АССИСТЕНТ'],'A chatbot that sells 24/7':['Čatbots, kas pārdod 24/7','Чатбот, который продаёт 24/7'],'Trained on your business, answers questions, books and qualifies leads.':['Apmācīts jūsu biznesam, atbild uz jautājumiem, pieraksta un kvalificē klientus.','Обучен под ваш бизнес, отвечает на вопросы, записывает и квалифицирует лидов.'],
+  'ANALYTICS & SEO':['ANALĪTIKA UN SEO','АНАЛИТИКА И SEO'],'Know what works':['Zini, kas strādā','Знайте, что работает'],'Traffic, conversions and Google ranking, tracked from day one.':['Apmeklējumi, konversijas un Google pozīcijas, no pirmās dienas.','Трафик, конверсии и позиции в Google с первого дня.'],
+  'Payments · Booking · CRM · Email · Messengers · Analytics · AI chatbots':['Maksājumi · Rezervācijas · CRM · E-pasts · Ziņojumapmaiņa · Analītika · AI čatboti','Платежи · Бронирование · CRM · Почта · Мессенджеры · Аналитика · AI-чатботы'],
+  '03 — Live demos':['03 — Piemēri','03 — Живые демо'],'Sites for':['Mājaslapas','Сайты для'],'every niche.':['jebkurai nišai.','любой ниши.'],
+  'Fintech landing':['Fintech lapa','Финтех-лендинг'],'Interior studio':['Interjera studija','Студия интерьера'],'AI assistant site':['AI asistenta lapa','Сайт с AI-ассистентом'],'Café':['Kafejnīca','Кафе'],'Restaurant':['Restorāns','Ресторан'],'Online store':['E-veikals','Интернет-магазин'],'Barbershop':['Bārddzenis','Барбершоп'],'Fitness club':['Fitnesa klubs','Фитнес-клуб'],'Real estate':['Nekustamais īpašums','Недвижимость'],'Spa & beauty':['Spa un skaistums','Спа и красота'],'Hotel':['Viesnīca','Отель'],'Dental clinic':['Zobārstniecība','Стоматология'],'Auto service':['Autoserviss','Автосервис'],'Online school':['Tiešsaistes skola','Онлайн-школа'],'Photo studio':['Foto studija','Фотостудия'],
+  'Dark, fast payment-service site with animated stats.':['Tumša, ātra maksājumu pakalpojuma lapa ar animētu statistiku.','Тёмный быстрый сайт платёжного сервиса с анимированной статистикой.'],'Elegant portfolio site for designers and creative studios.':['Elegants portfolio dizaineriem un radošām studijām.','Элегантное портфолио для дизайнеров и творческих студий.'],'SaaS-style page with a chatbot that answers customers.':['SaaS stila lapa ar čatbotu, kas atbild klientiem.','SaaS-страница с чатботом, который отвечает клиентам.'],'Ready-made demo site for this niche.':['Gatavs piemērs šai nišai.','Готовое демо для этой ниши.'],'Open live demo →':['Atvērt piemēru →','Открыть демо →'],
+  '04 — Pricing':['04 — Cenas','04 — Цены'],'Websites that':['Mājaslapas, kas','Сайты, которые'],'sell.':['pārdod.','продают.'],'Landing page':['Vienlapas mājaslapa','Лендинг'],'from €99':['no €99','от €99'],'from €249':['no €249','от €249'],'from €499':['no €499','от €499'],'One-page site, responsive, animations, contact form. Ready in about a week.':['Vienas lapas vietne, adaptīva, ar animācijām un kontaktformu. Gatava apmēram nedēļā.','Одностраничный сайт, адаптивный, с анимациями и формой связи. Готов примерно за неделю.'],'Multi-page site with CRM, booking, payments and analytics connected.':['Daudzlapu vietne ar pieslēgtu CRM, rezervācijām, maksājumiem un analītiku.','Многостраничный сайт с подключёнными CRM, бронированием, платежами и аналитикой.'],'3D + AI website':['3D + AI mājaslapa','3D + AI сайт'],'3D scenes, custom animations and an AI assistant that talks to your customers.':['3D ainas, unikālas animācijas un AI asistents, kas sarunājas ar klientiem.','3D-сцены, уникальные анимации и AI-ассистент, который общается с клиентами.'],'Business website':['Biznesa mājaslapa','Сайт для бизнеса'],
+  '05 — Reviews':['05 — Atsauksmes','05 — Отзывы'],'What clients':['Ko klienti','Что говорят'],'say.':['saka.','клиенты.'],
+  'Our new site was ready in a week and bookings grew right away. Aleksandrs explains everything in simple words.':['Mūsu jaunā mājaslapa bija gatava nedēļā, un rezervācijas uzreiz pārsāka augt. Aleksandrs visu izskaidro vienkāršos vārdos.','Наш новый сайт был готов за неделю, и бронирования сразу выросли. Александрс всё объясняет простыми словами.'],'Marta K. · Café owner':['Marta K. · Kafejnīcas īpašniece','Marta K. · Владелица кафе'],
+  'The chatbot answers customers at night and we stopped losing orders. Great value for the price.':['Čatbots atbild klientiem naktij, un mēs vairs nezaudējam pasūtījumus. Lieliska vērtība par cenu.','Чатбот отвечает клиентам ночью, и мы перестали терять заказы. Отличное соотношение цены и качества.'],'Andris B. · Online shop':['Andris B. · E-veikals','Andris B. · Интернет-магазин'],
+  'He connected payments and our CRM without a single problem. Everything just works.':['Viņš pieslēdza maksājumus un mūsu CRM bez nevienas problēmas. Viss vienkārši strādā.','Он подключил платежи и наш CRM без единой проблемы. Всё просто работает.'],'Elena V. · Beauty salon':['Elena V. · Skaistumkopšanas salons','Elena V. · Салон красоты'],
+  'Fast, polite and very detail-oriented. The 3D animation made our site stand out from competitors.':['Ātrs, pieklajīgs un ļoti detalizēts. 3D animācija mūsu mājaslapu izcēla uz konkurentu fona.','Быстрый, вежливый и очень внимательный. 3D-анимация выделила наш сайт среди конкурентов.'],'Pāvels D. · Car service':['Pāvels D. · Autoserviss','Pāvels D. · Автосервис'],
+  'One-page site, responsive, animations, contact form. Ready in 3 days.':['Vienas lapas vietne, adaptīva, ar animācijām un kontaktformu. Gatava 3 dienās.','Одностраничный сайт, адаптивный, с анимациями и формой связи. Готов за 3 дня.'],
+  'Multi-page site with CRM, booking, payments and analytics connected. Ready in 5 days.':['Daudzlapu vietne ar pieslēgtu CRM, rezervācijām, maksājumiem un analītiku. Gatava 5 dienās.','Многостраничный сайт с подключёнными CRM, бронированием, платежами и аналитикой. Готов за 5 дней.'],
+  '3D scenes, custom animations and an AI assistant that talks to your customers. Ready in about a week.':['3D ainas, unikālas animācijas un AI asistents, kas sarunājas ar klientiem. Gatava apmēram nedēļā.','3D-сцены, уникальные анимации и AI-ассистент, который общается с клиентами. Готов примерно за неделю.'],
+  'from €75':['no €75','от €75'],'from €200':['no €200','от €200'],'from €350':['no €350','от €350'],
+  'Landing page from €75 (3 days), business website from €200 (5 days), 3D + AI website from €350 (about a week). Tell me what you need and I will give an exact quote.':['Vienlapas mājaslapa no €75 (3 dienas), biznesa mājaslapa no €200 (5 dienas), 3D + AI mājaslapa no €350 (apmēram nedēļa). Pastāstiet, ko vajag, un nosaukšu precīzu cenu.','Лендинг от €75 (3 дня), сайт для бизнеса от €200 (5 дней), 3D + AI сайт от €350 (около недели). Расскажите, что нужно, и я назову точную цену.'],
+  'Landing page: 3 days, business website: 5 days, 3D + AI website: about a week.':['Vienlapas mājaslapa: 3 dienas, biznesa mājaslapa: 5 dienas, 3D + AI mājaslapa: apmēram nedēļa.','Лендинг: 3 дня, сайт для бизнеса: 5 дней, 3D + AI сайт: около недели.'],
+  'Telegram & WhatsApp bots':['Telegram un WhatsApp boti','Боты в Telegram и WhatsApp'],'Bots for orders, bookings and customer support in the messengers your customers already use.':['Boti pasūtījumiem, rezervācijām un klientu atbalstam ziņojumapmaiņas lietotnēs, ko klienti jau lieto.','Боты для заказов, бронирования и поддержки клиентов в мессенджерах, которыми они уже пользуются.'],'Telegram bots':['Telegram boti','Telegram-боты'],'WhatsApp bots':['WhatsApp boti','WhatsApp-боты'],
+  'Work':['Darbi','Работы'],'— Selected work':['— Izvēlēti darbi','— Избранные работы'],'Selected':['Izvēlēti','Избранные'],'work.':['darbi.','работы.'],'Visit site ↗':['Atvērt vietni ↗','Открыть сайт ↗'],'Interior designer portfolio':['Interjera dizainera portfolio','Портфолио дизайнера интерьера'],'Corporate website: ergonomics and workplace safety':['Korporātīvā vietne: ergonomika un darba drošība','Корпоративный сайт: эргономика и безопасность на работе'],'Visual effects studio website':['Vizuālo efektu studijas vietne','Сайт студии визуальных эффектов'],'Website':['Mājaslapa','Сайт'],'E-commerce: jewelry store':['E-komercija: rotaslietu veikals','E-commerce: украшения'],'E-commerce: cycling apparel':['E-komercija: velo apgērbs','E-commerce: велоэкипировка'],
+  'Started as a freelancer':['Sāku kā frīlanseris','Начал как фрилансер'],'I began building websites and doing IT support for small businesses on my own.':['Sāku pats veidot mājaslapas un sniegt IT atbalstu mazajiem uzņēmumiem.','Я начал самостоятельно делать сайты и заниматься IT-поддержкой для малого бизнеса.'],'FINTECH':['FINTECH','ФИНТЕХ'],'Learned how business really works':['Sapratu, kā bizness patiešām darbojas','Понял, как на самом деле работает бизнес'],'Working with payments and merchant onboarding taught me how customers pay and why details matter.':['Darbs ar maksājumiem un tirgotāju onboarding mācīja man, kā klienti maksā un kāpēc svarīgas detaļas.','Работа с платежами и онбордингом мерчантов научила меня, как платят клиенты и почему важны детали.'],'TODAY':['ŠODIEN','СЕГОДНЯ'],'AS Life is born':['AS Life dzīve sākas','Рождение AS Life'],'With a Computer Science degree and real experience, I turned freelancing into my own small company.':['Ar datorzinātņu grādu un reālu pieredzi es pārvērtu frīlansu par savu mazo uzņēmumu.','С дипломом по информатике и реальным опытом я превратил фриланс в собственную небольшую компанию.'],
+  'AI takes the routine':['AI pārņem rutīnu','AI берёт на себя рутину'],'I find the routine tasks in your company, build the automation and keep it running.':['Atrodu jūsu uzņēmuma rutīnas uzdevumus, izveidoju automatizāciju un uzturēju to darbībā.','Нахожу в вашей компании рутинные задачи, строю автоматизацию и поддерживаю её работу.'],
+  'Email & inbox':['E-pasts un iesūtņe','Почта и входящие'],'AI reads, sorts and drafts replies for you.':['AI izlasa, kārto un sagatavo atbildes.','AI читает, сортирует и готовит ответы.'],
+  'Invoices & documents':['Rēķini un dokumenti','Счета и документы'],'Created, filled in and sent automatically.':['Tiek izveidoti, aizpildīti un nosūtīti automātiski.','Создаются, заполняются и отправляются автоматически.'],
+  'Reports':['Atskaites','Отчёты'],'Numbers collected and delivered to your inbox every week.':['Rādītāji tiek apkopoti un katru nedēļu nosūtīti uz e-pastu.','Цифры собираются и каждую неделю приходят вам на почту.'],
+  'Lead handling':['Pieprasījumu apstrāde','Работа с заявками'],'New enquiries qualified, added to CRM and followed up.':['Jauni pieprasījumi tiek kvalificēti, pievienoti CRM un apstrādāti.','Новые заявки квалифицируются, попадают в CRM и получают ответ.'],
+  'Scheduling & reminders':['Pieraksti un atgādinājumi','Записи и напоминания'],'Bookings, confirmations and no-show reminders on autopilot.':['Pieraksti, apstiprinājumi un atgādinājumi darbojas automātiski.','Записи, подтверждения и напоминания работают на автопилоте.'],
+  'Customer support':['Klientu atbalsts','Поддержка клиентов'],'A chatbot answers common questions and hands over to a person.':['Čatbots atbild uz biežākajiem jautājumiem un nodod sarunu cilvēkam.','Чатбот отвечает на частые вопросы и передаёт диалог человеку.'],
+  'Data entry':['Datu ievade','Ввод данных'],'Data moves between forms, sheets and CRM without retyping.':['Dati pārvietojas starp formām, tabulām un CRM bez pārrakstīšanas.','Данные переходят между формами, таблицами и CRM без перепечатывания.'],
+  'Content':['Saturs','Контент'],'Product descriptions, posts and translations drafted by AI.':['AI sagatavo preču aprakstus, ierakstus un tulkojumus.','AI готовит описания товаров, посты и переводы.'],
+  'Audit':['Audits','Аудит'],'Build':['Izstrāde','Разработка'],'Launch':['Palaišana','Запуск'],'Support':['Atbalsts','Поддержка'],'You focus on the business. I set up and maintain everything.':['Jūs pievēršaties biznesam. Es visu uzstādu un uzturēju.','Вы занимаетесь бизнесом. Я всё настраиваю и поддерживаю.'],'Business automation':['Biznesa automatizācija','Автоматизация бизнеса'],
+  'See my work':['Skatīt darbus','Смотреть работы'],
+  '03 — Pricing':['03 — Cenas','03 — Цены'],'04 — Reviews':['04 — Atsauksmes','04 — Отзывы'],'05 — Contact':['05 — Kontakti','05 — Контакты'],'languages':['valodas','языка'],
+  'Revenue':['Ieņēmumi','Выручка'],
+  'New lead':['Jauns pieprasījums','Новая заявка'],'Website form':['Mājaslapas forma','Форма на сайте'],'NEW':['JAUNS','НОВАЯ'],
+  'Book a table for 2?':['Rezēt galdīu diviem?','Забронировать столик на двоих?'],'Done! Tomorrow 19:00 ✓':['Gatavs! Rīt 19:00 ✓','Готово! Завтра 19:00 ✓'],'Booking':['Rezervācija','Бронирование'],'Analytics':['Analītika','Аналитика'],
+  'projects completed':['pabeigti projekti','завершённых проектов'],
+  'Clear prices.':['Skaidras cenas.','Понятные цены.'],'No surprises.':['Bez pārsteigumiem.','Без сюрпризов.'],
+  'Needed a site for my barbershop with online booking. Got it in 6 days, and clients already book at night.':['Man vajadzēja mājaslapu bārddzenim ar tiešsaistes rezervāciju. Dabūju 6 dienās, un klienti jau pierakstās naktī.','Нужен был сайт для барбершопа с онлайн-записью. Получил за 6 дней, и клиенты уже записываются по ночам.'],'Roberts L. · Barbershop':['Roberts L. · Bārddzenis','Roberts L. · Барбершоп'],
+  'Clear prices, no surprises. He even helped me set up the domain and email.':['Skaidras cenas, bez pārsteigumiem. Viņš pat palīdzēja uzstādīt domēnu un e-pastu.','Понятные цены, без сюрпризов. Он даже помог настроить домен и почту.'],'Inese S. · Flower shop':['Inese S. · Ziedu veikals','Inese S. · Цветочный магазин'],
+  'I was afraid of anything technical, but he handled everything. The site loads really fast.':['Baidījos no visa tehniskā, bet viņš visu nokārtoja. Mājaslapa ielādējas ļoti ātri.','Я боялся всего технического, но он всё сделал сам. Сайт загружается очень быстро.'],'Dmitry K. · Accounting firm':['Dmitry K. · Grāmatvedības birojs','Dmitry K. · Бухгалтерская фирма'],
+  'Our site finally looks as professional as our work. We get more enquiries now.':['Mūsu mājaslapa beidzot izskatās tikpat profesionāla kā mūsu darbs. Tagad saņemam vairāk pieprasījumu.','Наш сайт наконец выглядит так же профессионально, как наша работа. Заявок стало больше.'],'Laura M. · Real estate agency':['Laura M. · Nekustamā īpašuma āģentūra','Laura M. · Агентство недвижимости'],
+  '06 — Contact':['06 — Kontakti','06 — Контакты'],'Let\'s build':['Uzbūvēsim','Создадим'],'something':['kaut ko','что-то'],'great.':['lielisku.','отличное.'],'Want a website like these? Let\'s talk. · aleksandrssuslovs.life':['Vēlaties tādu mājaslapu? Parunāsim. · aleksandrssuslovs.life','Хотите такой сайт? Давайте поговорим. · aleksandrssuslovs.life'],
+  'AI assistant':['AI asistents','AI-ассистент'],'Services':['Pakalpojumi','Услуги'],'Ask me anything...':['Jautājiet jebko...','Спросите что угодно...'],
+  'Hi! I am the AI assistant. Ask me about websites, prices or integrations.':['Sveiki! Es esmu AI asistents. Jautājiet par mājaslapām, cenām vai integrācijām.','Привет! Я AI-ассистент. Спросите про сайты, цены или интеграции.'],
+  'What services do you offer?':['Kādus pakalpojumus piedāvājat?','Какие услуги вы предлагаете?'],'How much does a website cost?':['Cik maksā mājaslapa?','Сколько стоит сайт?'],'Can you connect payments and an AI chatbot?':['Vai vari pieslēgt maksājumus un AI čatbotu?','Можете подключить платежи и AI-чатбот?'],
+  'Landing page from €99, business website from €249, 3D + AI website from €499. Tell me what you need and I will give an exact quote.':['Vienlapas mājaslapa no €99, biznesa mājaslapa no €249, 3D + AI mājaslapa no €499. Pastāstiet, ko vajag, un nosaukšu precīzu cenu.','Лендинг от €99, сайт для бизнеса от €249, 3D + AI сайт от €499. Расскажите, что нужно, и я назову точную цену.'],
+  'Yes, I can connect card and wallet payments, bookings, CRM, email and messengers to your site.':['Jā, varu pieslēgt karšu un maku maksājumus, rezervācijas, CRM, e-pastu un ziņojumapmaiņu jūsu mājaslapai.','Да, я могу подключить к сайту платежи картами и кошельками, бронирование, CRM, почту и мессенджеры.'],
+  'I build AI chatbots trained on your business: they answer customers, take bookings and qualify leads 24/7.':['Veidoju AI čatbotus, apmācītus jūsu biznesam: tie atbild klientiem, pieraksta un kvalificē pieprasījumus 24/7.','Делаю AI-чатботов, обученных под ваш бизнес: они отвечают клиентам, записывают и квалифицируют лидов 24/7.'],
+  'Websites, online stores, 3D animated sites, AI chatbots and automation, payments and CRM integrations, redesign, SEO and IT support.':['Mājaslapas, e-veikali, 3D animētas lapas, AI čatboti un automatizācija, maksājumu un CRM integrācijas, pārveidošana, SEO un IT atbalsts.','Сайты, интернет-магазины, 3D-анимация, AI-чатботы и автоматизация, платежи и CRM, редизайн, SEO и IT-поддержка.'],
+  'A typical website launches in about 7 days.':['Parasti mājaslapa tiek palaista apmēram 7 dienās.','Обычно сайт запускается примерно за 7 дней.'],
+  'Good question! Write to me via the contact section and I will reply within 24 hours.':['Labs jautājums! Uzrakstiet man sadaļā Kontakti, un es atbildēšu 24 stundu laikā.','Хороший вопрос! Напишите мне в разделе Контакты, и я отвечу в течение 24 часов.']};
+  function tr(s){var e=T[s];return e&&LG!=='en'?e[LG==='lv'?0:1]:s}
+  document.querySelectorAll('[data-sc]').forEach(function(el){el.dataset.en=el.textContent});
+  function scan(){var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode()){var p=n.parentElement;if(!p||/^(SCRIPT|STYLE)$/.test(p.tagName)||p.closest('[data-sc],#role,#pc')||n._k)continue;var k=n.nodeValue.trim();if(k&&T[k]){n._k=k;NL.push(n)}}}
+  function apply(){scan();
+    NL.forEach(function(n){var v=n.nodeValue,a=v.match(/^\s*/)[0],b=v.match(/\s*$/)[0];n.nodeValue=a+px(tr(n._k))+b});
+    document.querySelectorAll('[data-sc]').forEach(function(el){clearInterval(el._i);el.textContent=tr(el.dataset.en);el.dataset.t=el.textContent});
+    document.documentElement.lang=LG;$('#ll').textContent={lv:'LV',ru:'RUS',en:'EN'}[LG];$('#cl').textContent={EUR:'€',GBP:'£',USD:'$'}[CU];
+    document.querySelectorAll('#lng b').forEach(function(b){b.classList.toggle('on',b.dataset.l===LG)});document.querySelectorAll('#crn b').forEach(function(b){b.classList.toggle('on',b.dataset.c===CU)});
+    var bi=$('#bt');if(bi)bi.placeholder=tr('Ask me anything...');
+    document.querySelectorAll('.bq button').forEach(function(b){if(!b.dataset.q0)b.dataset.q0=b.dataset.q;b.dataset.q=tr(b.dataset.q0)});
+  }
+  document.querySelectorAll('.ddb').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();var d=b.parentNode,o=d.classList.contains('open');document.querySelectorAll('.dd').forEach(function(x){x.classList.remove('open')});if(!o)d.classList.add('open')})});
+  document.addEventListener('click',function(){document.querySelectorAll('.dd').forEach(function(x){x.classList.remove('open')})});
+  var bg=$('#burger'),nv=$('nav');
+  bg.addEventListener('click',function(e){e.stopPropagation();nv.classList.toggle('open')});
+  nv.querySelectorAll('div>a').forEach(function(a){a.addEventListener('click',function(){nv.classList.remove('open')})});
+  document.addEventListener('click',function(e){if(!nv.contains(e.target))nv.classList.remove('open')});
+  var HN=$('#name');
+  function lt(s){return s.split('').map(function(c,i){return '<span class="l" style="animation-delay:'+(i*.04)+'s">'+(c===' '?'&nbsp;':c)+'</span>'}).join('')}
+  function buildCal(){var n=new Date(),y=n.getFullYear(),m=n.getMonth(),loc={lv:'lv-LV',ru:'ru-RU',en:'en-GB'}[LG],mo=new Intl.DateTimeFormat(loc,{month:'long'}).format(n);
+    $('#mo').textContent=mo.charAt(0).toUpperCase()+mo.slice(1);
+    var first=(new Date(y,m,1).getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),h='',t=n.getDate(),bk=[t+2,t+5,t+9],d,k;
+    for(d=0;d<first;d++)h+='<i></i>';
+    for(d=1;d<=dim;d++)h+='<i class="'+(d===t?'td':bk.indexOf(d)>-1?'bk':'')+'">'+d+'</i>';
+    $('#dg').innerHTML=h;var wd='';
+    for(k=0;k<7;k++)wd+='<u>'+new Intl.DateTimeFormat(loc,{weekday:'narrow'}).format(new Date(2024,0,1+k))+'</u>';
+    $('#wd').innerHTML=wd}
+  function rebuild(){buildCal();HN.innerHTML='<span class="g">'+lt(tr('Websites'))+'</span><br>'+lt(tr('that grow'))+'<br>'+lt(tr('your business'))}
+  document.querySelectorAll('#lng b').forEach(function(b){b.addEventListener('click',function(){LG=b.dataset.l;apply();rebuild()})});
+  document.querySelectorAll('#crn b').forEach(function(b){b.addEventListener('click',function(){CU=b.dataset.c;apply()})});
+  apply();
+  buildCal();
+  // loader counter
+  var pc=$('#pc'),t0=performance.now();
+  (function f(t){var p=Math.min((t-t0)/1500,1);pc.textContent=Math.round(p*100)+'%';if(p<1)requestAnimationFrame(f);else $('#loader').classList.add('done')})(t0);
+  // scramble text
+  var CH='!<>-_\\/[]{}=+*^?#01';
+  function scr(el,txt,speed){var n=0,len=txt.length;clearInterval(el._i);el._i=setInterval(function(){var o='';for(var i=0;i<len;i++)o+=i<n?txt[i]:(txt[i]===' '?' ':CH[Math.random()*CH.length|0]);el.textContent=o;n+=speed||.5;if(n>=len+1){el.textContent=txt;clearInterval(el._i)}},30)}
+  var roles=['Company websites','Business automation','Online stores','Booking systems','AI chatbots','Telegram bots','WhatsApp bots'],ri=0;
+  setTimeout(function(){(function nx(){scr($('#role'),'> '+tr(roles[ri++%roles.length]),.6);setTimeout(nx,2800)})()},2200);
+  // split hero letters
+  var nm=$('#name'),d=1.6;
+  function wrap(el){var t=el.textContent;el.textContent='';for(var i=0;i<t.length;i++){var s=document.createElement('span');s.className='l';s.textContent=t[i]===' '?'\u00a0':t[i];s.style.animationDelay=(d+=.05)+'s';el.appendChild(s)}}
+  nm.querySelectorAll('.g').forEach(wrap);
+  Array.from(nm.childNodes).forEach(function(n){if(n.nodeType===3){var s=document.createElement('span');s.textContent=n.textContent;nm.replaceChild(s,n);wrap(s)}});
+  // reveal, counters, scramble eyebrows
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var el=e.target;el.classList.add('in');if(el.hasAttribute('data-sc'))scr(el,el.dataset.t,.5);el.querySelectorAll('[data-n]').forEach(count);io.unobserve(el)}})},{threshold:.2});
+  document.querySelectorAll('[data-sc]').forEach(function(el){el.dataset.t=el.textContent});
+  document.querySelectorAll('.rv').forEach(function(el,i){el.style.transitionDelay=(i%3)*.12+'s';io.observe(el)});
+  function count(el){var n=+el.dataset.n,s=performance.now();(function f(t){var p=Math.min((t-s)/1600,1);el.textContent=Math.round(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(s)}
+  // cursor + magnetic
+  var cur=$('#cur'),dot=$('#dot'),cx=0,cy=0,tx=0,ty=0;
+  addEventListener('mousemove',function(e){tx=e.clientX;ty=e.clientY;root.style.setProperty('--cx',tx+'px');root.style.setProperty('--cy',ty+'px');dot.style.transform='translate('+tx+'px,'+ty+'px)'});
+  document.querySelectorAll('a,.card').forEach(function(el){el.addEventListener('mouseenter',function(){cur.classList.add('big')});el.addEventListener('mouseleave',function(){cur.classList.remove('big')})});
+  document.querySelectorAll('.mg').forEach(function(b){
+    b.addEventListener('mousemove',function(e){var r=b.getBoundingClientRect();b.style.transform='translate('+(e.clientX-r.left-r.width/2)*.35+'px,'+(e.clientY-r.top-r.height/2)*.5+'px)'});
+    b.addEventListener('mouseleave',function(){b.style.transform=''})});
+  document.querySelectorAll('.card').forEach(function(c){
+    c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      c.style.transform='rotateY('+((x-.5)*18)+'deg) rotateX('+((.5-y)*18)+'deg)';c.style.setProperty('--mx',x*100+'%');c.style.setProperty('--my',y*100+'%')});
+    c.addEventListener('mouseleave',function(){c.style.transform=''})});
+  // live demos (shadow DOM)
+  var D={
+  fin:{t:'payflow.example',h:'<style>:host{display:block;font-family:system-ui,sans-serif}.w{background:#070b14;color:#fff;padding:40px 6%;min-height:480px;background-image:radial-gradient(circle at 80% 10%,#3a5bff55,transparent 50%)}nav{display:flex;justify-content:space-between;margin-bottom:60px}nav b{color:#4ef0b0}h1{font-size:clamp(2rem,6vw,3.6rem);margin:0 0 14px;line-height:1.05}p{color:#9aa7c0;max-width:480px}button{background:#4ef0b0;border:0;padding:12px 26px;border-radius:99px;font-weight:700;margin-top:18px}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px}.g div{background:#ffffff10;border:1px solid #ffffff22;border-radius:14px;padding:16px;animation:f 4s infinite}.g b{font-size:1.6rem;color:#4ef0b0;display:block}@keyframes f{50%{transform:translateY(-8px)}}.g div:nth-child(2){animation-delay:.6s}.g div:nth-child(3){animation-delay:1.2s}</style><div class=w><nav><b>PayFlow</b><span>Pricing · API · Login</span></nav><h1>Accept payments<br>anywhere, instantly.</h1><p>Cards, wallets and bank transfers in one simple integration.</p><button>Get started</button><div class=g><div><b>0.9%</b>fee</div><div><b>150+</b>countries</div><div><b>24/7</b>support</div></div></div>'},
+  int:{t:'studio-nord.example',h:'<style>:host{display:block;font-family:Georgia,serif}.w{background:#f5efe6;color:#2b2420;min-height:480px}.h{display:grid;grid-template-columns:1fr 1fr}.t{padding:50px 6%}.t small{letter-spacing:.3em;font-family:system-ui,sans-serif}h1{font-weight:400;font-size:clamp(2rem,5vw,3.4rem);margin:12px 0}.i{background:linear-gradient(135deg,#c9a27e,#8b5e3c);min-height:320px;position:relative;overflow:hidden}.i::after{content:"";position:absolute;width:55%;height:55%;left:22%;top:22%;border:2px solid #f5efe688;animation:s 8s infinite alternate}@keyframes s{to{transform:rotate(12deg) scale(1.15)}}a{display:inline-block;border-bottom:1px solid;padding-bottom:3px;margin-top:14px}.r{display:flex;gap:10px;padding:0 6% 40px}.r div{flex:1;height:90px;background:#d8c7b0}.r div:nth-child(2){background:#b08968}.r div:nth-child(3){background:#7a5c44}@media(max-width:600px){.h{grid-template-columns:1fr}}</style><div class=w><div class=h><div class=t><small>STUDIO NORD</small><h1>Spaces that feel like you.</h1><p>Interior design for homes, cafes and offices.</p><a>View portfolio</a></div><div class=i></div></div><div class=r><div></div><div></div><div></div></div></div>'},
+  ai:{t:'ai-assist.example',h:'<style>:host{display:block;font-family:system-ui,sans-serif}.w{background:#0d0a1a;color:#fff;padding:40px 6%;min-height:480px;background-image:radial-gradient(circle at 20% 0,#8b5cf655,transparent 50%)}h1{font-size:clamp(2rem,5.5vw,3.2rem);margin:0 0 12px}h1 span{color:#c4a8ff}p{color:#a79fc2;max-width:460px}.c{margin-top:30px;max-width:420px;background:#ffffff0d;border:1px solid #ffffff22;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}.c div{padding:10px 14px;border-radius:12px;max-width:85%;opacity:0;animation:i .5s forwards}.u{background:#8b5cf6;align-self:flex-end}.a{background:#ffffff18}.c div:nth-child(2){animation-delay:1.2s}.c div:nth-child(3){animation-delay:2.4s}@keyframes i{to{opacity:1}}</style><div class=w><h1>AI assistant <span>for your business</span></h1><p>Answers customers, books orders and works 24/7.</p><div class=c><div class=u>Do you deliver on Sunday?</div><div class=a>Yes! Delivery is open 9:00–20:00. Want to place an order?</div><div class=u>Yes, 2 please</div></div></div>'}};
+  var host=$('#host'),sr=host.attachShadow({mode:'open'}),md=$('#modal');
+  function closeD(){md.classList.remove('on');document.body.style.overflow='';sr.innerHTML=''}
+  document.querySelectorAll('[data-demo]').forEach(function(b){b.addEventListener('click',function(){var d=D[b.dataset.demo];sr.innerHTML=d.h;$('#mt').textContent=d.t;md.classList.add('on');document.body.style.overflow='hidden'})});
+  $('#mx').addEventListener('click',closeD);md.addEventListener('click',function(e){if(e.target===md)closeD()});addEventListener('keydown',function(e){if(e.key==='Escape')closeD()});
+  // more niches (generated demos)
+  var SS='system-ui,sans-serif',GS='Georgia,serif';
+  var G=[
+  ['cafe','Café','Café Aroma','#1c1410','#f4e9dc','#e0a96d',GS,'Your morning,<br>perfectly brewed.','Specialty coffee, fresh pastries and a cozy corner.','Order online',[['12','coffee origins'],['7:00','opens daily'],['4.9★','guest rating']]],
+  ['rest','Restaurant','Osteria Luna','#120d0d','#f7efe6','#d94f4f',GS,'Taste Italy,<br>one table at a time.','Handmade pasta, wood-fired pizza and a great wine list.','Book a table',[['85','dishes'],['18:00','dinner service'],['Live','music Fridays']]],
+  ['shop','Online store','Urban Store','#f6f6f4','#14161a','#ff5a3c',SS,'New season<br>is here.','Streetwear and accessories with fast delivery.','Shop now',[['-30%','sale'],['Free','delivery'],['24h','returns']]],
+  ['barber','Barbershop','Sharp Barber','#0e0e10','#ffffff','#c9a24d',SS,'Cut. Style.<br>Confidence.','Classic cuts, beard care and hot towel shaves.','Book appointment',[['15+','barbers'],['€20','haircut'],['7 days','open']]],
+  ['gym','Fitness club','IronFit Gym','#0a0f0a','#ffffff','#b6ff3c',SS,'Train harder.<br>Live stronger.','Modern equipment, group classes and personal trainers.','Join today',[['24/7','access'],['40+','classes'],['5','locations']]],
+  ['home','Real estate','Nest Homes','#f4f7fa','#0f2336','#1d6fe0',SS,'Find a home<br>you will love.','Apartments and houses with virtual tours and quick viewings.','Browse listings',[['1200','listings'],['15 min','to book a viewing'],['0%','buyer fee']]],
+  ['spa','Spa & beauty','Lotus Spa','#fbf3f1','#3a2a2c','#d98a9a',GS,'Relax. Renew.<br>Glow.','Massage, facials and wellness rituals in a calm space.','Book a visit',[['30+','treatments'],['9–21','open daily'],['4.9★','reviews']]],
+  ['hotel','Hotel','Sea Breeze Hotel','#0c1a2a','#ffffff','#4fd0e0',SS,'Wake up<br>by the sea.','Sea-view rooms, breakfast included and a private beach.','Check availability',[['64','rooms'],['100m','to the beach'],['Free','breakfast']]],
+  ['dent','Dental clinic','Smile Dental','#f2fbfb','#0b3a3c','#12b5b0',SS,'Healthy smile,<br>gentle care.','Modern dentistry for the whole family, with online booking.','Book a visit',[['12','specialists'],['0€','first consultation'],['9–20','Mon–Sat']]],
+  ['auto','Auto service','Turbo Garage','#101114','#ffffff','#ff9f1c',SS,'Your car,<br>in expert hands.','Diagnostics, repair and tyre service with transparent prices.','Book service',[['2h','average repair'],['1 yr','warranty'],['5000+','happy drivers']]],
+  ['edu','Online school','Skill Academy','#0f1020','#ffffff','#7c6cff',SS,'Learn skills<br>that pay off.','Video courses, mentors and certificates in one place.','Start learning',[['120+','courses'],['30k','students'],['4.8★','rating']]],
+  ['photo','Photo studio','Frame Studio','#111111','#ffffff','#ff4d6d',SS,'Moments,<br>beautifully framed.','Portraits, weddings and brand photography.','Book a shoot',[['500+','shoots'],['48h','delivery'],['3','studios']]]];
+  function mk(o){return '<style>:host{display:block;font-family:'+o.f+'}.w{background:'+o.bg+';color:'+o.fg+';padding:40px 6%;min-height:480px;background-image:radial-gradient(circle at 85% 0,'+o.ac+'44,transparent 55%)}nav{display:flex;justify-content:space-between;margin-bottom:56px;font-size:.9rem}nav b{color:'+o.ac+';letter-spacing:.1em}h1{font-size:clamp(2rem,6vw,3.5rem);line-height:1.05;margin:0 0 14px}p{opacity:.7;max-width:460px}button{background:'+o.ac+';color:'+o.bg+';border:0;padding:12px 28px;border-radius:99px;font-weight:700;margin-top:16px}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:36px}.g div{border:1px solid '+o.fg+'33;border-radius:14px;padding:16px;animation:f 4s infinite;background:'+o.fg+'0d}.g b{display:block;font-size:1.5rem;color:'+o.ac+'}@keyframes f{50%{transform:translateY(-7px)}}.g div:nth-child(2){animation-delay:.6s}.g div:nth-child(3){animation-delay:1.2s}</style><div class=w><nav><b>'+o.n.toUpperCase()+'</b><span>About · Services · Contact</span></nav><h1>'+o.h+'</h1><p>'+o.p+'</p><button>'+o.c+'</button><div class=g>'+o.s.map(function(s){return '<div><b>'+s[0]+'</b>'+s[1]+'</div>'}).join('')+'</div></div>'}
+  var pg=$('#projects .grid');
+  G.forEach(function(g,i){
+    var o={k:g[0],t:g[1],n:g[2],bg:g[3],fg:g[4],ac:g[5],f:g[6],h:g[7],p:g[8],c:g[9],s:g[10]};
+    D[o.k]={t:o.n.toLowerCase().replace(/ /g,'-')+'.example',h:mk(o)};
+    var el=document.createElement('div');el.className='card rv';
+    el.innerHTML='<small>'+(i+4<10?'0':'')+(i+4)+'</small><h3>'+o.t+'</h3><p>Ready-made demo site for this niche.</p><button class=btn>Open live demo →</button>';
+    el.querySelector('button').addEventListener('click',function(){sr.innerHTML=D[o.k].h;$('#mt').textContent=D[o.k].t;md.classList.add('on');document.body.style.overflow='hidden'});
+    pg.appendChild(el);io.observe(el);
+  });
+  // rich demo engine v2
+  var L=G.map(function(g){return {k:g[0],n:g[2],bg:g[3],fg:g[4],ac:g[5],f:g[6],h:g[7],p:g[8],c:g[9],s:g[10]}});
+  L.push({k:'fin',n:'PayFlow',bg:'#070b14',fg:'#ffffff',ac:'#4ef0b0',f:SS,h:'Accept payments<br>anywhere, instantly.',p:'Cards, wallets and bank transfers in one simple integration.',c:'Get started',s:[['0.9%','fee'],['150+','countries'],['24/7','support']]});
+  L.push({k:'int',n:'Studio Nord',bg:'#f5efe6',fg:'#2b2420',ac:'#a8693a',f:GS,h:'Spaces that<br>feel like you.',p:'Interior design for homes, cafes and offices.',c:'View portfolio',s:[['120+','projects'],['3D','visualisation'],['12','awards']]});
+  L.push({k:'ai',n:'AI Assist',bg:'#0d0a1a',fg:'#ffffff',ac:'#a98bff',f:SS,h:'AI assistant<br>for your business.',p:'Answers customers, books orders and works 24/7.',c:'Try it free',s:[['24/7','online'],['-60%','support load'],['5 min','setup']]});
+  var X={
+  cafe:['☕','s',16,'Open daily · 7:00–20:00',[['☕','Flat White','Silky espresso, steamed milk','€3.2'],['🥐','Butter Croissant','Baked fresh every morning','€2.5'],['🍰','Basque Cheesecake','Creamy, caramelised top','€4.8']],['Specialty coffee','Fresh pastries','Cozy corner','Oat milk','Free Wi-Fi'],'The best flat white in town. I come here every single morning.','Marta K.'],
+  rest:['🍝','c',4,'Reservations open',[['🍕','Margherita','San Marzano, mozzarella, basil','€11'],['🍝','Tagliatelle al ragù','Slow-cooked for 6 hours','€14'],['🍮','Tiramisu','House recipe','€6']],['Wood-fired','Handmade pasta','Italian wines','Live music','Private dining'],'Felt like a trip to Rome. The pasta is unreal.','Daniel R.'],
+  shop:['👟','s',0,'New season collection',[['👟','Air Runner','Lightweight daily sneaker','€89'],['🧥','Storm Jacket','Waterproof and packable','€129'],['🎒','City Pack 20L','Fits a 15-inch laptop','€59']],['New arrivals','Free delivery','30-day returns','Limited drops','Sustainable'],'Fast delivery and the quality is way above the price.','Alex T.'],
+  barber:['💈','c',2,'Walk-ins welcome',[['✂️','Classic Cut','Scissors and clipper work','€20'],['🧔','Beard Sculpt','Trim, line-up, hot towel','€15'],['🪒','Royal Shave','Straight razor shave','€25']],['Hot towel','Straight razor','Fade experts','Premium products','Walk-ins'],'Best fade I have ever had. Booked my next visit before leaving.','Ivan P.'],
+  gym:['🏋️','s',8,'First week free',[['🔥','HIIT Class','45 minutes, all levels','Included'],['🏋️','Personal Training','1-on-1 with a coach','€35'],['🧘','Yoga Flow','Mobility and recovery','Included']],['24/7 access','Top equipment','Sauna','Group classes','No contract'],'Lost 8 kg in 3 months. The coaches really care.','Sofia L.'],
+  home:['🏡','c',12,'1200+ verified listings',[['🏙️','Downtown Loft','2 rooms · 58 m² · city centre','€185k'],['🏡','Family House','4 rooms · garden · quiet suburb','€320k'],['🏢','Studio Flat','1 room · 31 m² · near metro','€92k']],['Virtual tours','Mortgage help','Verified listings','Fast viewings'],'Found our flat in 10 days. Zero stress, zero hidden fees.','Anna & Mark'],
+  spa:['🪷','s',24,'Wellness since 2012',[['💆','Deep Tissue Massage','60 minutes of full relaxation','€55'],['✨','Glow Facial','Cleansing and hydration','€45'],['🛁','Spa Ritual','Massage, sauna and tea','€89']],['Aromatherapy','Hot stone','Couples rooms','Gift cards','Organic care'],'I walked in stressed and left floating. Pure bliss.','Elena V.'],
+  hotel:['🏖️','c',10,'Summer offer −20%',[['🛏️','Sea View Room','King bed with balcony','€120/night'],['🏊','Infinity Pool','Open 8:00–22:00','Free'],['🍳','Breakfast Buffet','Fresh and local','Included']],['Private beach','Spa','Free parking','Pets welcome','Late checkout'],'Woke up to the sound of waves. We are coming back next summer.','James H.'],
+  dent:['🦷','s',18,'Free first consultation',[['🦷','Check-up & Clean','Full examination','€40'],['✨','Teeth Whitening','Up to 8 shades brighter','€180'],['😁','Aligners','Digital smile plan','€1900']],['Painless','Digital X-ray','Family care','Emergency 24/7','Insurance'],'Zero pain and the doctor explained everything. My kids love it too.','Olga M.'],
+  auto:['🔧','c',6,'Open Mon–Sat',[['🛢️','Oil Service','Oil, filter, 21-point check','€69'],['🛞','Tyre Change','Balancing included','€35'],['🔍','Full Diagnostics','Computer and road test','€49']],['Fixed prices','1-year warranty','Same-day repair','Original parts','Free pickup'],'Honest prices and my car was ready the same day.','Pavel D.'],
+  edu:['🎓','s',14,'New cohort starts Monday',[['💻','Web Development','12 weeks · mentor support','€299'],['📊','Data Analytics','10 weeks · real projects','€279'],['🎨','UI/UX Design','8 weeks · portfolio','€249']],['Live mentors','Certificates','Career support','Lifetime access','Community'],'Changed careers in 6 months. Best investment I ever made.','Nikita S.'],
+  photo:['📸','c',0,'Booking the 2026 season',[['💍','Wedding Story','Full-day coverage','€900'],['🧑‍🎨','Portrait Session','1 hour, 30 edited photos','€120'],['🏷️','Brand Shoot','Product and lifestyle','€350']],['Natural light','48h previews','Studio rental','Retouching','Prints'],'The photos are stunning. Every single one tells a story.','Kate & Tom'],
+  fin:['💳','s',14,'Trusted by 4,000+ merchants',[['⚡','Instant payouts','Funds in minutes','0.9%'],['🌍','Global cards','150+ countries','Included'],['🛡️','Fraud shield','AI risk scoring','Free']],['Cards','Wallets','Open banking','Payouts','API'],'We integrated in one afternoon. Conversion went up 12%.','Head of Product, ShopLy'],
+  int:['🛋️','c',2,'Projects across 8 countries',[['🛋️','Living rooms','Warm, functional layouts','€40/m²'],['🍳','Kitchens','Custom cabinetry plans','€55/m²'],['🏢','Offices','Spaces that boost focus','€35/m²']],['3D visualisation','Furniture sourcing','Project management','Turnkey'],'They understood our taste better than we did.','Laura & Max'],
+  ai:['🤖','s',16,'Setup in 5 minutes',[['💬','Instant answers','Trained on your data','24/7'],['📅','Auto booking','Calendar sync','Included'],['📈','Insights','See what customers ask','Weekly']],['Chatbot','Automation','CRM sync','Analytics','Multilingual'],'It handles 70% of our support questions. The team finally breathes.','COO, Retail Group']};
+  function mk2(o,x){
+    var a=o.ac,F=o.fg,B=o.bg,R=x[2],R2=Math.min(R*1.5,28),hh=o.h.split('<br>');
+    var kw=x[5].concat(x[5],x[5],x[5]).map(function(s){return '<span>'+s+'</span>'}).join('');
+    var its=x[4].map(function(i){return '<div class=it><i>'+i[0]+'</i><h3>'+i[1]+'</h3><p>'+i[2]+'</p><b>'+i[3]+'</b></div>'}).join('');
+    return `<style>:host{display:block;font-family:${o.f}}*{box-sizing:border-box}.w{background:${B};color:${F};overflow:hidden}.w>*{animation:u .8s both}@keyframes u{from{opacity:0;transform:translateY(24px)}}nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6%}nav b{letter-spacing:.12em;color:${a}}nav span{opacity:.7;font-size:.9rem}button{cursor:pointer;font:inherit;font-weight:700;border-radius:${R}px;padding:11px 24px;border:0;background:${a};color:${B};transition:.25s}button:hover{transform:translateY(-3px);box-shadow:0 12px 30px ${a}66}.gh{background:none;border:1px solid ${F}55;color:${F};margin-left:8px}.hero{display:flex;align-items:center;gap:30px;padding:30px 6% 60px}.hero.c{flex-direction:column-reverse;text-align:center}.tx{flex:1}.pill{display:inline-block;border:1px solid ${F}33;padding:5px 14px;border-radius:99px;font-size:.78rem;margin-bottom:16px}h1{font-size:clamp(2.2rem,7vw,4.4rem);line-height:1;margin:0 0 16px;letter-spacing:-.02em}h1 em{font-style:normal;color:${a}}.tx p{opacity:.7;max-width:480px;margin:0 0 22px}.hero.c p{margin-inline:auto}.vis{flex:1;display:flex;justify-content:center;align-items:center;position:relative;min-height:280px}.orb{width:min(300px,70vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 30% 30%,${a},${a}55 45%,transparent 70%);display:flex;align-items:center;justify-content:center;font-size:7rem;animation:fl 5s ease-in-out infinite;filter:drop-shadow(0 30px 40px ${a}55)}@keyframes fl{50%{transform:translateY(-16px) rotate(4deg)}}.chip{position:absolute;background:${F}1a;backdrop-filter:blur(10px);border:1px solid ${F}33;border-radius:14px;padding:10px 14px;font-size:.8rem;animation:fl 4s ease-in-out infinite}.chip b{display:block;color:${a};font-size:1.1rem}.k1{left:2%;top:10%}.k2{right:2%;bottom:8%;animation-delay:1s}.mq{overflow:hidden;white-space:nowrap;padding:14px 0;background:${a};color:${B};font-weight:800}.mq div{display:inline-block;animation:m 20s linear infinite}.mq span{margin:0 24px}.mq span:after{content:' ✦';margin-left:24px}@keyframes m{to{transform:translateX(-50%)}}.sec{padding:60px 6%}.sec h2{font-size:clamp(1.6rem,4vw,2.4rem);margin:0 0 26px}.gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}.it{border:1px solid ${F}22;background:${F}0d;border-radius:${R2}px;padding:22px;transition:.3s}.it:hover{transform:translateY(-8px);border-color:${a};box-shadow:0 20px 40px ${a}33}.it i{font-style:normal;font-size:2.4rem;display:block;margin-bottom:10px;transition:.3s}.it:hover i{transform:scale(1.25) rotate(-8deg)}.it h3{margin:0 0 4px}.it p{opacity:.65;font-size:.9rem;margin:0 0 12px}.it b{color:${a}}.q{padding:30px 6% 60px;text-align:center}.q p{font-size:clamp(1.2rem,3vw,1.8rem);max-width:640px;margin:0 auto 12px;line-height:1.4}.q small{opacity:.6}.bn{margin:0 6% 50px;padding:44px;border-radius:${R2}px;background:linear-gradient(120deg,${a},${a}99);color:${B};text-align:center}.bn h2{margin:0 0 16px;font-size:clamp(1.5rem,4vw,2.2rem)}.bn button{background:${B};color:${F}}footer{padding:24px 6%;opacity:.5;font-size:.85rem;text-align:center;border-top:1px solid ${F}22}.g-list .gr{grid-template-columns:1fr}.g-list .it{display:grid;grid-template-columns:auto 1fr auto;column-gap:18px;align-items:center}.g-list .it i{grid-row:1/3;margin:0}.g-list .it h3,.g-list .it p{grid-column:2;margin:0}.g-list .it b{grid-row:1/3;grid-column:3}.g-bento .gr{grid-template-columns:2fr 1fr}.g-bento .it:first-child{grid-row:1/3;display:flex;flex-direction:column;justify-content:flex-end;min-height:260px;background:linear-gradient(160deg,${a}33,transparent)}.g-num .gr{counter-reset:n}.g-num .it:before{counter-increment:n;content:'0' counter(n);font-size:2.6rem;font-weight:900;color:transparent;-webkit-text-stroke:1px ${a};display:block}.g-num .it i{display:none}.s-arch .orb{border-radius:999px 999px 24px 24px;aspect-ratio:.8;width:min(240px,60vw)}.s-sq .orb{border-radius:28px}.s-ring .orb{background:transparent;border:2px solid ${a};box-shadow:inset 0 0 60px ${a}55,0 0 60px ${a}55}.s-blob .orb{border-radius:60% 40% 55% 45%/50% 60% 40% 50%}.t-upper h1{text-transform:uppercase;letter-spacing:.01em}.t-serif h1{font-family:Georgia,serif;font-weight:400}.nomq .mq{display:none}@media(max-width:640px){.g-bento .gr{grid-template-columns:1fr}.g-bento .it:first-child{grid-row:auto}.hero{flex-direction:column-reverse;text-align:center}.hero p{margin-inline:auto}.gh,nav span{display:none}}</style><div class='w ${V[o.k]||''}'><nav><b>${o.n.toUpperCase()}</b><span>Home · Services · About · Contact</span><button>${o.c}</button></nav><div class='hero ${x[1]}'><div class=tx><span class=pill>${x[3]}</span><h1>${hh[0]}<br><em>${hh[1]}</em></h1><p>${o.p}</p><button>${o.c}</button><button class=gh>Learn more</button></div><div class=vis><div class=orb>${x[0]}</div><div class='chip k1'><b>4.9 ★</b>2,300 reviews</div><div class='chip k2'><b>${o.s[0][0]}</b>${o.s[0][1]}</div></div></div><div class=mq><div>${kw}</div></div><div class=sec><h2>Our favourites</h2><div class=gr>${its}</div></div><div class=q><p>“${x[6]}”</p><small>— ${x[7]}</small></div><div class=bn><h2>Ready when you are.</h2><button>${o.c}</button></div><footer>© 2026 ${o.n} · Demo website</footer></div>`;
+  }
+  var V={cafe:'g-list s-blob t-serif',rest:'g-num s-arch t-serif nomq',shop:'g-bento s-sq t-upper',barber:'g-num s-ring t-upper',gym:'g-bento s-blob t-upper',home:'g-list s-arch',spa:'s-ring t-serif nomq',hotel:'g-bento s-arch t-serif nomq',dent:'s-blob',auto:'g-list s-sq t-upper',edu:'g-num s-sq',photo:'g-bento s-ring t-serif nomq',fin:'s-ring',int:'g-list s-arch t-serif nomq',ai:'g-bento s-blob'};
+  L.forEach(function(o){D[o.k]=D[o.k]||{};D[o.k].h=mk2(o,X[o.k]);D[o.k].t=o.n.toLowerCase().replace(/ /g,'-')+'.example'});
+  apply();
+  // reviews carousel (ping-pong auto scroll)
+  var rvs=$('#rvs'),rdir=1,rhold=false;
+  rvs.addEventListener('mouseenter',function(){rhold=true});rvs.addEventListener('mouseleave',function(){rhold=false});
+  rvs.addEventListener('touchstart',function(){rhold=true},{passive:true});rvs.addEventListener('touchend',function(){setTimeout(function(){rhold=false},2000)});
+  setInterval(function(){if(rhold)return;rvs.scrollLeft+=rdir;if(rvs.scrollLeft+rvs.clientWidth>=rvs.scrollWidth-2)rdir=-1;else if(rvs.scrollLeft<=0)rdir=1},16);
+  $('#rp').addEventListener('click',function(){rvs.scrollLeft-=340;rdir=-1});
+  $('#rn').addEventListener('click',function(){rvs.scrollLeft+=340;rdir=1});
+  // AI bot
+  var SYS='You are the website assistant of AS Life (founder Aleksandrs Suslovs), a one-person web business (aleksandrssuslovs.life, Riga). Services: Telegram and WhatsApp bots, business websites, landing pages, online stores, 3D and animated sites, AI chatbots, AI automation, payment and fintech integrations, CRM/booking/email/messenger integrations, redesign, SEO and analytics, hosting and IT support. Prices: landing from EUR 75 (3 days), business website from EUR 200 (5 days), 3D + AI website from EUR 350 (about a week) (about GBP 65, 170 and 300; USD 85, 220 and 385). Reply in the visitor language, max 3 short friendly sentences. For quotes or booking, invite them to use the contact section. Never invent other facts.';
+  var hist=[],bm=$('#bm'),busy=false,smp;
+  function add(t,c){var d=document.createElement('div');d.className=c;d.textContent=t;bm.appendChild(d);bm.scrollTop=bm.scrollHeight;return d}
+  function fb(q){q=q.toLowerCase().replace(/cik maks|cenas?|maksā/g,'price ').replace(/maksāj|kartes?/g,'pay ').replace(/čatbot|bots/g,'bot ').replace(/pakalpoj|ko tu dari|ko proti/g,'service ').replace(/cik ilgi|laik|termiņ/g,'time ');
+    if(/price|cost|eur|€|цен|стоим|сколько/.test(q))return 'Landing page from €75 (3 days), business website from €200 (5 days), 3D + AI website from €350 (about a week). Tell me what you need and I will give an exact quote.';
+    if(/pay|stripe|card|плат/.test(q))return 'Yes, I can connect card and wallet payments, bookings, CRM, email and messengers to your site.';
+    if(/bot|\bai\b|чат|бот/.test(q))return 'I build AI chatbots trained on your business: they answer customers, take bookings and qualify leads 24/7.';
+    if(/service|offer|do you|услуг|умеешь|делаешь/.test(q))return 'Websites, online stores, 3D animated sites, AI chatbots and automation, payments and CRM integrations, redesign, SEO and IT support.';
+    if(/time|long|week|срок|долго/.test(q))return 'Landing page: 3 days, business website: 5 days, 3D + AI website: about a week.';
+    return 'Good question! Write to me via the contact section and I will reply within 24 hours.'}
+  async function ask(q){
+    q=q.trim();if(busy||!q)return;busy=true;add(q,'u');hist.push({role:'user',content:q});var d=add('...','a'),ans;
+    try{
+      if(smp===undefined)smp=(window.claude&&claude.use)?(await claude.use('sample'))||false:false;
+      if(!smp)throw 0;
+      var ms=hist.map(function(m,i){return i===0?{role:'user',content:SYS+'\n\nShow prices in '+CU+'. Visitor: '+m.content}:m});
+      var r=await smp(ms,{modelTier:'quick',cache:false});ans=r.text;
+    }catch(e){ans=px(tr(fb(q)))}
+    d.textContent=ans;hist.push({role:'assistant',content:ans});bm.scrollTop=bm.scrollHeight;busy=false;
+  }
+  var bt=$('#bt');
+  $('#botb').addEventListener('click',function(){var b=$('#bot');b.classList.toggle('on');if(b.classList.contains('on')&&!bm.children.length)add(tr('Hi! I am the AI assistant. Ask me about websites, prices or integrations.'),'a')});
+  $('#botx').addEventListener('click',function(){$('#bot').classList.remove('on')});
+  $('#bs').addEventListener('click',function(){var v=bt.value;bt.value='';ask(v)});
+  bt.addEventListener('keydown',function(e){if(e.key==='Enter'){var v=bt.value;bt.value='';ask(v)}});
+  document.querySelectorAll('.bq button').forEach(function(b){b.addEventListener('click',function(){ask(b.dataset.q)})});
+  // three.js
+  var canvas=$('#bg'),R=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+  R.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.5:2));
+  var S=new THREE.Scene(),C=new THREE.PerspectiveCamera(55,1,.1,100);C.position.z=7;
+  var cA=new THREE.Color(),cB=new THREE.Color(),cW=new THREE.Color();
+  var U={uT:{value:0},uA:{value:cA},uB:{value:cB},uK:{value:.35},uP:{value:0},uM:{value:new THREE.Vector3(99,99,0)}};
+  var blob=new THREE.Mesh(new THREE.TorusKnotGeometry(1.1,.36,innerWidth<700?160:300,innerWidth<700?32:48,2,3),new THREE.ShaderMaterial({uniforms:U,transparent:true,
+    vertexShader:'uniform float uT,uK,uP;varying vec3 vN,vV;void main(){vec3 p=position;float d=sin(p.x*2.2+uT)*sin(p.y*2.4+uT*1.2)*sin(p.z*2.0+uT*.8);float r=sin(length(p)*0+p.y*5.-uT*8.)*uP;p+=normal*(d*uK*.45+r*.12);vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(p,1.);vV=-mv.xyz;gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform vec3 uA,uB;varying vec3 vN,vV;void main(){float f=pow(1.-max(dot(normalize(vN),normalize(vV)),0.),2.);vec3 c=mix(uB*.2,mix(uA,uB,f),f+.2);gl_FragColor=vec4(c,.5+f*.5);}'}));
+  var wire=new THREE.Mesh(new THREE.TorusKnotGeometry(1.1,.36,90,10,2,3),new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:.14}));
+  var r1=new THREE.Mesh(new THREE.TorusGeometry(2.9,.012,8,160),new THREE.MeshBasicMaterial({color:0xffffff})),r2=r1.clone();
+  var grp=new THREE.Group();grp.add(blob,wire,r1,r2);S.add(grp);
+  var vel=0,last=0,shA=0,sats=[];
+  wire.scale.setScalar(1.12);
+  var core=new THREE.Mesh(new THREE.OctahedronGeometry(.5,0),new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true}));grp.add(core);
+  
+  var grid=new THREE.GridHelper(60,60,0xffffff,0xffffff);grid.material.transparent=true;grid.material.opacity=.15;grid.position.y=-4;S.add(grid);
+  var sh=new THREE.Mesh(new THREE.RingGeometry(.97,1,96),new THREE.MeshBasicMaterial({transparent:true,opacity:0,side:2,color:0xffffff,depthWrite:false}));S.add(sh);
+  var N=innerWidth<700?1000:2200,pp=new Float32Array(N*3),sd=new Float32Array(N);
+  for(var i=0;i<N;i++){pp[i*3]=(Math.random()-.5)*26;pp[i*3+1]=(Math.random()-.5)*16;pp[i*3+2]=(Math.random()-.5)*14;sd[i]=Math.random()}
+  var pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pp,3));pg.setAttribute('aS',new THREE.BufferAttribute(sd,1));
+  var PU={uT:U.uT,uM:U.uM,uC:{value:cA},uR:{value:R.getPixelRatio()}};
+  var pts=new THREE.Points(pg,new THREE.ShaderMaterial({uniforms:PU,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    vertexShader:'uniform float uT,uR;uniform vec3 uM;attribute float aS;void main(){vec3 p=position;p+=vec3(sin(uT*.3+aS*40.),cos(uT*.25+aS*60.),sin(uT*.2+aS*20.))*.6;vec3 d=p-uM;float k=smoothstep(2.6,0.,length(d.xy));p.xy+=normalize(d.xy+.001)*k*1.4;vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=(1.5+aS*3.5+k*4.)*uR*(6./-mv.z);gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform vec3 uC;void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;gl_FragColor=vec4(uC,pow(1.-d*2.,2.)*.9);}'}));
+  S.add(pts);
+  var mx=0,my=0,sp=0,sm=0,pulse=0;
+  addEventListener('mousemove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+  addEventListener('click',function(){pulse=1;shA=1});
+  function onScroll(){var m=Math.max(1,root.scrollHeight-innerHeight);sp=scrollY/m;$('#prog').style.width=sp*100+'%'}
+  addEventListener('scroll',onScroll);onScroll();
+  function resize(){R.setSize(innerWidth,innerHeight,false);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()}
+  addEventListener('resize',resize);resize();
+  var P=[[0x2bf0a0,0x3aa6ff],[0xff5ea8,0xa05bff],[0x3aa6ff,0x7b8cff],[0x7cff6b,0x2bd9ff],[0xa05bff,0x3aa6ff],[0xffd34d,0xff8a3d],[0x3aa6ff,0x2bf0a0]].map(function(a){return a.map(function(h){return new THREE.Color(h)})});
+  var TX=[2.4,-2.4,2.4,-2.4,2.4,-2.4,0],TY=[0,0,0,0,0,0,.2],TZ=[0,.4,-.2,.2,-.2,.2,1.4],TS=[1,.8,.9,.9,.9,.9,1.25];
+  function lp(a,i,f){return a[i]+(a[i+1]-a[i])*f}
+  function tick(ms){
+    var t=ms*.001;U.uT.value=t;sm+=(sp-sm)*.06;
+    var k=sm*6,i=Math.min(Math.floor(k),5),f=k-i;f=f*f*(3-2*f);
+    var nr=innerWidth<800?.25:1;
+    grp.position.set(lp(TX,i,f)*nr,lp(TY,i,f),lp(TZ,i,f));
+    grp.scale.setScalar(lp(TS,i,f)*(innerWidth<800?.7:1));
+    cA.copy(P[i][0]).lerp(P[i+1][0],f);cB.copy(P[i][1]).lerp(P[i+1][1],f);
+    root.style.setProperty('--accent','#'+cA.getHexString());
+    wire.material.color.copy(cA);r1.material.color.copy(cB);r2.material.color.copy(cA);
+    pulse*=.94;U.uP.value=pulse;
+    vel+=((sm-last)*400-vel)*.1;last=sm;var av=Math.min(Math.abs(vel),3);
+    
+    grid.position.z=(t*.8)%1;grid.material.color.copy(cA);
+    shA*=.95;sh.material.opacity=shA*.8;sh.scale.setScalar(.5+(1-shA)*9);sh.position.copy(grp.position);sh.lookAt(C.position);sh.material.color.copy(cB);
+    $('.grid').style.transform='skewY('+Math.max(-6,Math.min(6,vel*1.5))+'deg)';
+    U.uK.value=.3+Math.sin(sm*Math.PI*3)*.12+Math.abs(mx)*.25+av*.15;
+    grp.rotation.y=t*.15+sm*5;grp.rotation.x=my*.6;
+    wire.rotation.x=t*.1;wire.rotation.z=-t*.08;
+    r1.rotation.set(1.2,0,t*.25);r2.rotation.set(.4,1,-t*.2);
+    core.rotation.x=t*.6;core.rotation.y=t*.8;core.material.color.copy(cB);wire.scale.setScalar(1.12+Math.sin(t*.9)*.04);
+    var hh=7*Math.tan(.4800),hw=hh*C.aspect;U.uM.value.set(mx*2*hw,-my*2*hh,0);
+    pts.rotation.y=sm*.5;
+    C.position.x+=(mx*1.6-C.position.x)*.05;C.position.y+=(-my*1.6-C.position.y)*.05;C.lookAt(0,0,0);
+    cx+=(tx-cx)*.16;cy+=(ty-cy)*.16;cur.style.transform='translate('+cx+'px,'+cy+'px)';
+    R.render(S,C);requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
